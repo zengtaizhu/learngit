@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="distributorFunc">
+        <item>进货信息管理</item>
+        <item>出货信息管理</item>
+        <item>产品信息管理</item>
+        <item>物流信息管理</item>
+        <item>质检信息管理</item>
+        <item>生病信息管理</item>
+    </string-array>
+    <string-array name="stockMsg">
+        <item>添加进货信息</item>
+        <item>修改进货信息</item>
+        <item>删除进货信息</item>
+        <item>获取进货信息</item>
+    </string-array>
+    <string-array name="shipmentMsg">
+        <item>添加出货信息</item>
+        <item>修改出货信息</item>
+        <item>删除出货信息</item>
+        <item>获取出货信息</item>
+    </string-array>
+    <string-array name="productMsg">
+        <item>添加动物信息</item>
+        <item>修改动物信息</item>
+        <item>删除动物信息</item>
+        <item>获取动物信息</item>
+    </string-array>
+    <string-array name="logisticsMsg">
+        <item>添加物流信息</item>
+        <item>修改物流信息</item>
+        <item>删除物流信息</item>
+        <item>获取物流信息</item>
+    </string-array>
+    <string-array name="qualityMsg">
+        <item>查看所有质检信息</item>
+    </string-array>
+    <string-array name="illMsg">
+        <item>查看生病信息</item>
+    </string-array>
+</resources>

@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.example.zengtaizhu.myapp.MainActivity">
+
+    <android.support.v4.widget.DrawerLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/drawer_layout">
+
+        <!-- 主要内容的视图 -->
+        <!-- 主内容视图一定要是DrawerLayout的第一个子视图 -->
+        <FrameLayout
+            android:id="@+id/content_frame"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1" >
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/post"
+                android:text="登陆"
+                android:layout_gravity="left|top"/>
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/get"
+                android:text="获取信息"
+                android:layout_gravity="right|top"/>
+            <ListView
+                android:id="@+id/mylist"
+                android:layout_width="match_parent"
+                android:layout_height="426dp"
+                android:layout_gravity="center"/>
+        </FrameLayout>
+
+        <!--导航窗口 -->
+        <LinearLayout
+            android:layout_width="240dp"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:layout_gravity="left"
+            android:background="#E0EEE0" >
+            <LinearLayout
+                android:id="@+id/menu_header"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <ImageView
+                    android:layout_width="80dp"
+                    android:layout_height="80dp"
+                    android:src="@drawable/title"/>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="6dp"
+                    android:orientation="vertical">
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="分销商管理平台"
+                        android:textColor="#d81e1e"
+                        android:layout_gravity="center_vertical"
+                        android:textSize="18sp" />
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:text="小标题"
+                        android:textColor="#d81e1e"
+                        android:textSize="12sp" />
+                </LinearLayout>
+            </LinearLayout>
+            <ListView
+                android:layout_width="match_parent"
+                android:layout_height="566dp"
+                android:id="@+id/menu_list"
+                android:choiceMode="singleChoice"
+                android:divider="#CD853F"
+                android:dividerHeight="2dp"
+                android:entries="@array/distributorFunc">
+            </ListView>
+        </LinearLayout>
+    </android.support.v4.widget.DrawerLayout>
+</LinearLayout>
