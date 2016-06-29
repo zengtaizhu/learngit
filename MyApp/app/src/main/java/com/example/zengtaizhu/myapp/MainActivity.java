@@ -31,17 +31,21 @@ public class MainActivity extends AppCompatActivity {
     String JSESSIONID;
     Button post,get;
     //侧滑栏的内容
-    ListView sliderList;
+    private ListView sliderList;
     //主界面的内容
-    ListView listView;
+    private ListView listView;
     //代表服务器响应的字符串
-    String response;
+    private String response;
     //抽屉画板DrawerLayout的布局
-    DrawerLayout myDrawerLayout;
+    private DrawerLayout myDrawerLayout;
     //传输到主界面的listView中
-    List<Map<String, Object>> listItems = new ArrayList<Map<String, Object>>();
+    private List<Map<String, Object>> listItems = new ArrayList<Map<String, Object>>();
     //标志，标明目前的功能
     private int state;
+    //显示在listView中的信息
+    private Map<String,Object> listItem;
+    //插入listView的适配器
+    private SimpleAdapter simpleAdapter;
     Handler handler = new Handler()
     {
         @Override
@@ -59,14 +63,6 @@ public class MainActivity extends AppCompatActivity {
             {
                 //设置show组件显示服务器响应
                 Toast.makeText(getApplicationContext(),response,Toast.LENGTH_SHORT).show();
-            }
-            if(msg.what == 0x125)
-            {
-                //创建一个SimpleAdapter
-                SimpleAdapter simpleAdapter = new SimpleAdapter(getApplicationContext(), listItems,
-                        R.layout.operation_layout,new String[]{"name"},
-                        new int[]{R.id.name});
-                listView.setAdapter(simpleAdapter);
             }
         }
     };
@@ -90,13 +86,17 @@ public class MainActivity extends AppCompatActivity {
                 String[] stock = distributor.getFunc(position);
                 for(int i = 0; i < stock.length; i++)
                 {
-                    Map<String,Object> listItem = new HashMap<String, Object>();
+                    listItem = new HashMap<String, Object>();
                     listItem.put("name",stock[i]);
                     listItems.add(listItem);
                     System.out.println(stock[i]);
                 }
                 state = position * 10;
-                handler.sendEmptyMessage(0x125);
+                //创建一个SimpleAdapter
+                simpleAdapter = new SimpleAdapter(getApplicationContext(), listItems,
+                        R.layout.operation_layout,new String[]{"name"},
+                        new int[]{R.id.name});
+                listView.setAdapter(simpleAdapter);
             }
         });
         //为主界面的listView添加点击事件
@@ -202,7 +202,7 @@ public class MainActivity extends AppCompatActivity {
         listView.setOnCreateContextMenuListener(new View.OnCreateContextMenuListener() {
             @Override
             public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
-                menu.setHeaderTitle("弹出");
+                //menu.setHeaderTitle("更多操作");
                 menu.add(0,0,0,"更新该信息");
                 menu.add(0,1,0,"删除该信息");
             }
@@ -210,8 +210,7 @@ public class MainActivity extends AppCompatActivity {
     }
     // 长按菜单响应函数
     public boolean onContextItemSelected(MenuItem item) {
-        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item
-                .getMenuInfo();
+        int selectedPosition = ((AdapterView.AdapterContextMenuInfo) item.getMenuInfo()).position;
         switch (item.getItemId()) {
             case 0:
                 // 更新操作
@@ -224,6 +223,9 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(),
                         "删除",
                         Toast.LENGTH_SHORT).show();
+                //删除所选的一列
+                listItems.remove(selectedPosition);
+                simpleAdapter.notifyDataSetChanged();
                 break;
             default:
                 break;
