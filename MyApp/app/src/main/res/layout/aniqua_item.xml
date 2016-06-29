@@ -6,59 +6,127 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:layout_marginLeft="16dp"
-        android:layout_marginTop="16dp"
-        android:layout_weight="1">
+        android:layout_weight="1"
+        android:background="#928ef5"
+        android:layout_margin="8dp">
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="质检信息"
             android:textSize="20dp"
             android:layout_marginTop="12dp"
-            android:textColor="#faea2c59"/>
-        <TextView
-            android:id="@+id/date"
+            android:textColor="#faea2c59"
+            android:gravity="center_horizontal" />
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="质检日期：2014-01-12"
-            android:width="50dp"/>
+            android:orientation="vertical"
+            android:width="50dp">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="质检日期："
+                android:gravity="center_horizontal" />
+            <TextView
+                android:id="@+id/date"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="2014-01-12"
+                android:gravity="center_horizontal" />
+        </LinearLayout>
     </LinearLayout>
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:layout_marginRight="16dp"
-        android:layout_marginTop="16dp"
-        android:layout_weight="3">
-        <TextView
-            android:id="@+id/batchNumber"
+        android:layout_weight="3"
+        android:layout_margin="8dp">
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="质检批次：zzz"/>
-        <TextView
-            android:id="@+id/sampleNumber"
+            android:layout_height="wrap_content">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:textColor="#4944ec"
+                android:text="质检批次："/>
+            <TextView
+                android:id="@+id/batchNumber"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textColor="#4944ec"
+                android:text="zzz"/>
+        </LinearLayout>
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="抽检数量：12"/>
-        <TextView
-            android:id="@+id/qualifiedNumber"
+            android:layout_height="wrap_content">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:textColor="#4944ec"
+                android:text="抽检数量："/>
+            <TextView
+                android:id="@+id/sampleNumber"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textColor="#4944ec"
+                android:text="12"/>
+        </LinearLayout>
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="合格数量：12"/>
-        <TextView
-            android:id="@+id/organization"
+            android:layout_height="wrap_content">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:textColor="#4944ec"
+                android:text="合格数量："/>
+            <TextView
+                android:id="@+id/qualifiedNumber"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textColor="#4944ec"
+                android:text="12"/>
+        </LinearLayout>
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="检测机构：我"/>
-        <TextView
-            android:id="@+id/person"
+            android:layout_height="wrap_content">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:textColor="#4944ec"
+                android:text="检测机构："/>
+            <TextView
+                android:id="@+id/organization"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textColor="#4944ec"
+                android:text="我"/>
+        </LinearLayout>
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="检测人员：他"/>
+            android:layout_height="wrap_content">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:textColor="#4944ec"
+                android:text="检测人员："/>
+            <TextView
+                android:id="@+id/person"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textColor="#4944ec"
+                android:text="他"/>
+        </LinearLayout>
     </LinearLayout>
 </LinearLayout>

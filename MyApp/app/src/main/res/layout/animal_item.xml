@@ -6,58 +6,125 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:layout_marginLeft="16dp"
-        android:layout_marginTop="16dp"
-        android:layout_weight="1">
+        android:layout_weight="1"
+        android:background="#928ef5"
+        android:layout_margin="8dp">
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="动物信息"
             android:textSize="20dp"
             android:layout_marginTop="20dp"
-            android:textColor="#faea2c59"/>
-        <TextView
-            android:id="@+id/category"
+            android:textColor="#faea2c59"
+            android:gravity="center_horizontal" />
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="种类:牛"/>
+            android:layout_height="wrap_content">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="10"
+                android:text="种类："
+                android:gravity="right" />
+            <TextView
+                android:id="@+id/category"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="9"
+                android:text="牛"
+                android:gravity="left" />
+        </LinearLayout>
     </LinearLayout>
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:layout_marginRight="16dp"
-        android:layout_marginTop="16dp"
-        android:layout_weight="3">
-        <TextView
-            android:id="@+id/sourceCode"
+        android:layout_weight="3"
+        android:layout_margin="8dp">
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="动物的溯源码：zzzz"/>
-        <TextView
-            android:id="@+id/buyBatchNum"
+            android:layout_height="wrap_content">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="10"
+                android:textColor="#4944ec"
+                android:text="动物的溯源码："/>
+            <TextView
+                android:id="@+id/sourceCode"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="7"
+                android:textColor="#4944ec"
+                android:text="zzzz"/>
+        </LinearLayout>
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="进货批次码:zzzzzz"/>
-        <TextView
-            android:id="@+id/saleBatchNum"
+            android:layout_height="wrap_content">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="5"
+                android:textColor="#4944ec"
+                android:text="进货批次码："/>
+            <TextView
+                android:id="@+id/buyBatchNum"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="3"
+                android:textColor="#4944ec"
+                android:text="zzzzzz"/>
+        </LinearLayout>
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="出货批次码:zzzzz"/>
-        <TextView
-            android:id="@+id/state"
+            android:layout_height="wrap_content">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="5"
+                android:textColor="#4944ec"
+                android:text="出货批次码："/>
+            <TextView
+                android:id="@+id/saleBatchNum"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="3"
+                android:textColor="#4944ec"
+                android:text="zzzzz"/>
+        </LinearLayout>
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="状态:死了"/>
-        <TextView
-            android:id="@+id/birthday"
+            android:layout_height="wrap_content">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="4"
+                android:textColor="#4944ec"
+                android:text="状态："/>
+            <TextView
+                android:id="@+id/state"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textColor="#4944ec"
+                android:text="死了"/>
+        </LinearLayout>
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="出生日期：2013-01-01"/>
+            android:layout_height="wrap_content">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="7"
+                android:textColor="#4944ec"
+                android:text="出生日期："/>
+            <TextView
+                android:id="@+id/birthday"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="3"
+                android:textColor="#4944ec"
+                android:text="2013-01-01"/>
+        </LinearLayout>
     </LinearLayout>
 </LinearLayout>

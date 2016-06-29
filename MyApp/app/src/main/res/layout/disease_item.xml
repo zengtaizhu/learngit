@@ -6,48 +6,96 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:layout_marginLeft="16dp"
-        android:layout_marginTop="16dp"
         android:layout_weight="1"
-        android:gravity="center_vertical">
+        android:gravity="center_vertical"
+        android:background="#928ef5"
+        android:layout_margin="8dp">
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="动物生病信息"
+            android:text="动物生病\n信息"
             android:textSize="20dp"
             android:textColor="#faea2c59"
-            android:gravity="center" />
+            android:gravity="center_horizontal"
+            android:lines="2" />
     </LinearLayout>
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:layout_marginRight="16dp"
-        android:layout_marginTop="16dp"
-        android:layout_weight="3">
-        <TextView
-            android:id="@+id/diseaseName"
+        android:layout_weight="3"
+        android:layout_margin="8dp">
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="病名：鸡流感"/>
-        <TextView
-            android:id="@+id/startDate"
+            android:layout_weight="1">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="4"
+                android:textColor="#4944ec"
+                android:text="病名："/>
+            <TextView
+                android:id="@+id/diseaseName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textColor="#4944ec"
+                android:text="鸡流感"/>
+        </LinearLayout>
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="病发日期：2013-01-12"/>
-        <TextView
-            android:id="@+id/endDate"
+            android:layout_weight="1">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:text="病发日期："
+                android:textColor="#4944ec" />
+            <TextView
+                android:id="@+id/startDate"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="2013-01-12"
+                android:textColor="#4944ec" />
+        </LinearLayout>
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="病愈日期：2015/11/1"/>
-        <TextView
-            android:id="@+id/comments"
+            android:layout_weight="1">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:text="病愈日期："
+                android:textColor="#4944ec" />
+            <TextView
+                android:id="@+id/endDate"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="2015/11/1"
+                android:textColor="#4944ec" />
+        </LinearLayout>
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="用药信息：无"/>
+            android:layout_weight="1">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:text="用药信息："
+                android:textColor="#4944ec" />
+            <TextView
+                android:id="@+id/comments"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="无"
+                android:textColor="#4944ec" />
+        </LinearLayout>
     </LinearLayout>
 </LinearLayout>

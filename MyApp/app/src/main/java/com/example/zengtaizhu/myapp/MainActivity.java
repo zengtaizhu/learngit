@@ -84,18 +84,25 @@ public class MainActivity extends AppCompatActivity {
                 listItems.clear();
                 //获取对应的管理内容
                 String[] stock = distributor.getFunc(position);
-                for(int i = 0; i < stock.length; i++)
-                {
-                    listItem = new HashMap<String, Object>();
-                    listItem.put("name",stock[i]);
-                    listItems.add(listItem);
-                    System.out.println(stock[i]);
-                }
+                listItem = new HashMap<String, Object>();
+                listItem.put("date",stock[1]);
+                listItem.put("name",stock[2]);
+                listItem.put("disBatchNum",stock[3]);
+                listItem.put("number",stock[4]);
+                listItems.add(listItem);
+//                for(int i = 0; i < stock.length; i++)
+//                {
+//                    listItem = new HashMap<String, Object>();
+//                    listItem.put("name",stock[i]);
+//                    listItems.add(listItem);
+//                    System.out.println(stock[i]);
+//                }
                 state = position * 10;
                 //创建一个SimpleAdapter
                 simpleAdapter = new SimpleAdapter(getApplicationContext(), listItems,
-                        R.layout.operation_layout,new String[]{"name"},
-                        new int[]{R.id.name});
+                        R.layout.distributor_item,
+                        new String[]{"name", "date", "disBatchNum", "number"},
+                        new int[]{R.id.name, R.id.date, R.id.BatchNum, R.id.number});
                 listView.setAdapter(simpleAdapter);
             }
         });

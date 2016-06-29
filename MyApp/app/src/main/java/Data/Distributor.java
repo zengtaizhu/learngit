@@ -33,7 +33,8 @@ public class Distributor {
         switch (n)
         {
             case 0:
-                return receive;
+                //return receive;
+                return new String[]{ "000000001", "2013-12-1", "猪", "123123123123", "12"};
             case 1:
                 return sale;
             case 2:
