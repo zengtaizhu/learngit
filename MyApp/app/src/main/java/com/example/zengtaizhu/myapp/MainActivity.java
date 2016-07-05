@@ -1,9 +1,11 @@
 package com.example.zengtaizhu.myapp;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -12,15 +14,18 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
+import android.widget.TableLayout;
 import android.widget.Toast;
 import com.google.gson.Gson;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import Data.GetPostUtil;
+
+import URLFunc.GetPostUtil;
 import Data.LoginMsg;
 import Data.Distributor;
 
@@ -139,7 +144,7 @@ public class MainActivity extends AppCompatActivity {
                         try
                         {
                             //登陆时所需的URL和params语句
-                            String url = "http://172.26.14.31:10689/login";
+                            String url = "http://202.116.161.86:8888/login";
                             String params = "username=222222&password=222222";
                             response = GetPostUtil.sendPost(url,params,null);
                             //如果连接失败，则不进行GSON解析
@@ -164,7 +169,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void run()
                     {
-                        String url2 = "http://172.26.14.31:10689/distributor/receive";
+                        String url2 = "http://202.116.161.86:8888/distributor/receive";
                         String params2 = "pageNum=1";
                         try
                         {
@@ -221,9 +226,11 @@ public class MainActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case 0:
                 // 更新操作
-                Toast.makeText(getApplicationContext(),
-                        "更新",
-                        Toast.LENGTH_SHORT).show();
+//                Toast.makeText(getApplicationContext(),
+//                        "更新",
+//                        Toast.LENGTH_SHORT).show();
+                //打开对话框
+                distView(selectedPosition);
                 break;
             case 1:
                 // 删除操作
@@ -237,8 +244,50 @@ public class MainActivity extends AppCompatActivity {
             default:
                 break;
         }
-
         return super.onContextItemSelected(item);
+    }
 
+    //打开一个自定义AlertDialog，用于增加或修改一条信息
+    public void distView(final int selectedPosition)
+    {
+        //装载app\src\main\res\layout\distributor_dialog.xml界面布局文件
+        TableLayout layoutForm = (TableLayout)getLayoutInflater()
+                .inflate(R.layout.distributor_dialog, null);
+        new AlertDialog.Builder(this)
+                //设置对话框的图标
+                .setIcon(R.drawable.title)
+                //设置对话框的标题
+                .setTitle("对话框")
+                //设置对话框显示的view对象
+                .setView(layoutForm)
+                //为对话框设置一个“确定”的按钮
+                .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        EditText disName = (EditText)findViewById(R.id.disName);
+                        EditText disDate = (EditText)findViewById(R.id.disDate);
+                        EditText disBatchNum = (EditText)findViewById(R.id.disBatchNum);
+                        //添加或修改信息到本地以及上传到服务器
+                        listItem = listItems.get(selectedPosition);
+                        String s = disBatchNum.getText().toString();
+                        listItems.set(selectedPosition,listItem);
+                        listItem.put("date",R.id.disDate);
+                        listItem.put("name",R.id.disName);
+                        listItem.put("disBatchNum",R.id.disBatchNum);
+                        listItem.put("number",0);
+                        listItems.add(listItem);
+                        simpleAdapter.notifyDataSetChanged();
+                    }
+                })
+                //为对话框设置一个“取消”按钮
+                .setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        //取消添加或修改信息
+                    }
+                })
+                //创建并显示对话框
+                .create()
+                .show();
     }
 }
