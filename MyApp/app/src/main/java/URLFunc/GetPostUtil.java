@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.List;
@@ -88,28 +89,27 @@ public class GetPostUtil {
         {
             URL realUrl = new URL(url);
             // 打开和URL之间的连接
-            URLConnection conn = realUrl.openConnection();
+            HttpURLConnection conn = (HttpURLConnection)realUrl.openConnection();
+            conn.setRequestMethod("POST");
+            conn.setUseCaches(false);
+            conn.setInstanceFollowRedirects(true);
             // 设置通用的请求属性
             if(null != JSESSIONID)
             {
                 conn.setRequestProperty("Cookie", "JSESSIONID="+JSESSIONID);
             }
-            conn.setRequestProperty("accept", "*/*");
-            conn.setRequestProperty("connection", "Keep-Alive");
-            conn.setRequestProperty("user-agent",
-                    "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1)");
             // 发送POST请求必须设置如下两行
             conn.setDoOutput(true);
             conn.setDoInput(true);
             // 获取URLConnection对象对应的输出流
             out = new PrintWriter(conn.getOutputStream());
             // 发送请求参数
-            out.print(params);  // ②
+            out.print(params);  //
             // flush输出流的缓冲
             out.flush();
             // 定义BufferedReader输入流来读取URL的响应
             in = new BufferedReader(
-                    new InputStreamReader(conn.getInputStream()));
+                    new InputStreamReader(conn.getInputStream(),"utf-8"));
             String line;
             while ((line = in.readLine()) != null)
             {
@@ -144,21 +144,24 @@ public class GetPostUtil {
     }
 
     /**
-     * 向指定URL发送Put方法的请求
+     * 向指定URL发送Delete方法的请求
      * @param url 发送请求的URL
      * @param params
      * @param JSESSIONID
      */
-    private static String sendPut(String url, String params,String JSESSIONID)
+    public static String sendDelete(String url, String params,String JSESSIONID)
     {
-        PrintWriter out = null;
-        BufferedReader in = null;
         String result = "";
+        BufferedReader in = null;
         try
         {
-            URL realUrl = new URL(url);
+            String urlName = url + "?" + params;//--——可以删除params参数
+            URL realUrl = new URL(urlName);
             // 打开和URL之间的连接
-            URLConnection conn = realUrl.openConnection();
+            HttpURLConnection conn = (HttpURLConnection)realUrl.openConnection();
+            conn.setRequestMethod("DELETE");
+            conn.setUseCaches(false);
+            conn.setInstanceFollowRedirects(true);
             // 设置通用的请求属性
             if(null != JSESSIONID)
             {
@@ -168,15 +171,9 @@ public class GetPostUtil {
             conn.setRequestProperty("connection", "Keep-Alive");
             conn.setRequestProperty("user-agent",
                     "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1)");
-            // 发送POST请求必须设置如下两行
-            conn.setDoOutput(true);
-            conn.setDoInput(true);
-            // 获取URLConnection对象对应的输出流
-            out = new PrintWriter(conn.getOutputStream());
-            // 发送请求参数
-            out.print(params);  // ②
-            // flush输出流的缓冲
-            out.flush();
+            conn.setRequestProperty("Content-Type","application/json");
+            // 建立实际的连接
+            conn.connect();
             // 定义BufferedReader输入流来读取URL的响应
             in = new BufferedReader(
                     new InputStreamReader(conn.getInputStream()));
@@ -185,25 +182,17 @@ public class GetPostUtil {
             {
                 result += line;
             }
-            if(result.equals("success"))
-                System.out.println("put成功");
-            else
-                System.out.println("put失败");
         }
         catch (Exception e)
         {
-            System.out.println("发送POST请求出现异常！" + e);
+            System.out.println("发送Delete请求出现异常！" + e);
             e.printStackTrace();
         }
-        // 使用finally块来关闭输出流、输入流
+        // 使用finally块来关闭输入流
         finally
         {
             try
             {
-                if (out != null)
-                {
-                    out.close();
-                }
                 if (in != null)
                 {
                     in.close();
