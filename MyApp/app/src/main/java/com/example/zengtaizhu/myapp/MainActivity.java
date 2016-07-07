@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import Method.RequestData;
 import URLFunc.SendHttpRequest;
 import HttpResponse.LoginMsg;
 import DataClass.Distributor;
@@ -68,6 +69,55 @@ public class MainActivity extends AppCompatActivity {
                 //设置show组件显示服务器响应
                 Toast.makeText(getApplicationContext(),response,Toast.LENGTH_SHORT).show();
             }
+            if(msg.what == 0x125)
+            {
+                switch (state)
+                {
+                    case 0:
+                        //创建一个SimpleAdapter
+                        simpleAdapter = new SimpleAdapter(getApplicationContext(), listItems,
+                                R.layout.receive_item,
+                                new String[]{"category", "date", "disBatchNum", "number"},
+                                new int[]{R.id.category, R.id.date, R.id.disBatchNum, R.id.number});
+                        break;
+                    case 1:
+                        //创建一个SimpleAdapter
+                        simpleAdapter = new SimpleAdapter(getApplicationContext(), listItems,
+                                R.layout.sale_item,
+                                new String[]{"category", "date", "batchNum", "number"},
+                                new int[]{R.id.category, R.id.date, R.id.batchNum, R.id.number});
+                        break;
+                    case 2:
+                        //创建一个SimpleAdapter
+                        simpleAdapter = new SimpleAdapter(getApplicationContext(), listItems,
+                                R.layout.animal_item,
+                                new String[]{"sourceCode", "saleBatchNum", "state", "birthday", "category"},
+                                new int[]{R.id.sourceCode, R.id.saleBatchNum, R.id.state, R.id.birthday, R.id.category});
+                        break;
+                    case 3:
+                        //创建一个SimpleAdapter
+                        simpleAdapter = new SimpleAdapter(getApplicationContext(), listItems,
+                                R.layout.logistics_item,
+                                new String[]{"id", "position", "time", "person"},
+                                new int[]{R.id.id, R.id.position, R.id.time, R.id.person});
+                        break;
+                    case 4:
+                        //创建一个SimpleAdapter
+                        simpleAdapter = new SimpleAdapter(getApplicationContext(), listItems,
+                                R.layout.aniqua_item,
+                                new String[]{"batchNumber", "sampleNumber", "qualifiedNumber",
+                                        "date", "originId", "organization" , "person"},
+                                new int[]{R.id.batchNumber, R.id.sampleNumber, R.id.qualifiedNumber,
+                                        R.id.date, R.id.originId, R.id.organization, R.id.person});
+                        break;
+                    case 5:
+
+                        break;
+                    default:
+                        break;
+                }
+                listView.setAdapter(simpleAdapter);
+            }
         }
     };
     @Override
@@ -85,29 +135,25 @@ public class MainActivity extends AppCompatActivity {
                 //Toast.makeText(getApplicationContext(),"选中了第" + position + "个",Toast.LENGTH_SHORT).show();
                 //每次切换管理项都清空一次
                 listItems.clear();
-                //获取对应的管理内容
-                String[] stock = distributor.getFunc(position);
-                listItem = new HashMap<String, Object>();
-                listItem.put("date",stock[1]);
-                listItem.put("name",stock[2]);
-                listItem.put("disBatchNum",stock[3]);
-                listItem.put("number",stock[4]);
-                listItems.add(listItem);
-//                for(int i = 0; i < stock.length; i++)
-//                {
-//                    listItem = new HashMap<String, Object>();
-//                    listItem.put("name",stock[i]);
-//                    listItems.add(listItem);
-//                    System.out.println(stock[i]);
-//                }
                 //标志：显示选中的功能
                 state = position;
-                //创建一个SimpleAdapter
-                simpleAdapter = new SimpleAdapter(getApplicationContext(), listItems,
-                        R.layout.distributor_item,
-                        new String[]{"name", "date", "disBatchNum", "number"},
-                        new int[]{R.id.name, R.id.date, R.id.BatchNum, R.id.number});
-                listView.setAdapter(simpleAdapter);
+                new Thread()
+                {
+                    @Override
+                    public void run()
+                    {
+                        try
+                        {
+                            //按照选择的功能获取相应的位置
+                            listItems = RequestData.getData(state,1,JSESSIONID);
+                            handler.sendEmptyMessage(0x125);
+                        }
+                        catch (Exception e)
+                        {
+                            Log.i("My Android",e.getMessage());
+                        }
+                    }
+                }.start();
             }
         });
         //为主界面的listView添加点击事件
@@ -151,6 +197,31 @@ public class MainActivity extends AppCompatActivity {
                             {
                                 handler.sendEmptyMessage(0x123);
                             }
+                        }
+                        catch(Exception e)
+                        {
+                            Log.i("My Android",e.getMessage());
+                        }
+                    }
+                }.start();
+            }
+        });
+
+        Button get = (Button)findViewById(R.id.get);
+        get.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                new Thread()
+                {
+                    @Override
+                    public void run()
+                    {
+                        String url2 = "http://202.116.161.86:8888/distributor/receive";
+                        String params2 = "pageNum=1";
+                        try
+                        {
+                            response = SendHttpRequest.sendGet(url2,params2,JSESSIONID);
+                            handler.sendEmptyMessage(0x124);
                         }
                         catch(Exception e)
                         {

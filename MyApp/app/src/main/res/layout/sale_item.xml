@@ -4,7 +4,7 @@
     android:layout_height="100dp"
     android:orientation="horizontal">
     <LinearLayout
-        android:layout_width="wrap_content"
+        android:layout_width="100dp"
         android:layout_height="match_parent"
         android:orientation="vertical"
         android:layout_weight="1"
@@ -14,7 +14,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="进货信息"
+            android:text="出货信息"
             android:textSize="20dp"
             android:textColor="#faea2c59"
             android:gravity="center" />
@@ -24,7 +24,9 @@
         android:layout_height="match_parent"
         android:orientation="vertical"
         android:layout_weight="3"
-        android:layout_margin="8dp">
+        android:layout_marginTop="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginBottom="8dp">
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -36,7 +38,7 @@
                 android:textColor="#4944ec"
                 android:text="名称：" />
             <TextView
-                android:id="@+id/name"
+                android:id="@+id/category"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -52,9 +54,9 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="2"
                 android:textColor="#4944ec"
-                android:text="进货批次码:" />
+                android:text="出货批次码:" />
             <TextView
-                android:id="@+id/BatchNum"
+                android:id="@+id/batchNum"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -86,14 +88,14 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="2"
+                android:layout_weight="5"
                 android:textColor="#4944ec"
-                android:text="进货时间：" />
+                android:text="出货时间：" />
             <TextView
                 android:id="@+id/date"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
+                android:layout_weight="2"
                 android:textColor="#4944ec"
                 android:text="2015-12-01" />
         </LinearLayout>

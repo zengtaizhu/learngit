@@ -11,6 +11,7 @@ public class Quality {
     private int sampleNumber;//抽检数量
     private int qualifiedNumber;//合格数量
     private Date date;//质检日期 格式:yyyy-mm-dd
+    private String originId;//检查id
     private String organization;//检测机构
     private String person;//检测人员
 
@@ -69,4 +70,13 @@ public class Quality {
     public void setBatchNumber(String batchNumber) {
         this.batchNumber = batchNumber;
     }
+
+    public String getOriginId() {
+        return originId;
+    }
+
+    public void setOriginId(String originId) {
+        this.originId = originId;
+    }
+
 }

@@ -8,7 +8,6 @@ import java.util.Date;
 public class Animal {
     private String animalId;//动物的id
     private String sourceCode;//动物的溯源码
-    private String buyBatchNum;//进货批次码
     private String saleBatchNum;//出货批次码
     private String state;//状态
     private Date birthday;//出生日期
@@ -28,14 +27,6 @@ public class Animal {
 
     public void setSourceCode(String sourceCode) {
         this.sourceCode = sourceCode;
-    }
-
-    public String getBuyBatchNum() {
-        return buyBatchNum;
-    }
-
-    public void setBuyBatchNum(String buyBatchNum) {
-        this.buyBatchNum = buyBatchNum;
     }
 
     public String getSaleBatchNum() {

@@ -15,7 +15,7 @@ public class GetJsonArray {
      */
     public static List<String> getJsonArray(String str)
     {
-        List<String> result = new ArrayList<String>();
+        List<String> result = new ArrayList<>();
         boolean isStart = false;
         int start = 0;
         for(int i = 0; i < str.length() - 1; i++)

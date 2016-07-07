@@ -1,6 +1,8 @@
 package DataClass;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by zengtaizhu on 2016/7/5.
@@ -9,7 +11,7 @@ import java.util.Date;
 public class Receive {
     private String id;//进货信息的id
     private Date date;//进货日期
-    private String name;//名称
+    private String category;//名称
     private String disBatchNum;//进货批次码
     private int number;//数量
 
@@ -29,12 +31,12 @@ public class Receive {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
+    public String getCategory() {
+        return category;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setCategory(String category) {
+        this.category = category;
     }
 
     public String getDisBatchNum() {
@@ -52,4 +54,5 @@ public class Receive {
     public void setNumber(int number) {
         this.number = number;
     }
+
 }
