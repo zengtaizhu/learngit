@@ -13,7 +13,7 @@ import java.util.Map;
 /**
  * Created by zengtaizhu on 2016/4/27.
  */
-public class GetPostUtil {
+public class SendHttpRequest {
     /**
      * 向指定URL发送GET方法的请求
      * @param url 发送请求的URL

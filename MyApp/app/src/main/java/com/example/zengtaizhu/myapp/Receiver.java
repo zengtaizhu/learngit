@@ -8,6 +8,9 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+/**
+ * 用于切换到另一个Activity，        等待删除
+ */
 public class Receiver extends Activity {
 
     Button btn;

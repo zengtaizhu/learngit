@@ -1,7 +1,8 @@
-package Data;
+package HttpResponse;
 
 /**
  * Created by zengtaizhu on 2016/4/27.
+ * 登陆后解析JSON的类
  */
 public class LoginMsg {
     private String ref;

@@ -25,16 +25,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import URLFunc.GetPostUtil;
-import Data.LoginMsg;
-import Data.Distributor;
+import URLFunc.SendHttpRequest;
+import HttpResponse.LoginMsg;
+import DataClass.Distributor;
 
 public class MainActivity extends AppCompatActivity {
 
     //分销商的功能
     Distributor distributor = new Distributor();
+    //登陆凭证
     String JSESSIONID;
-    Button post,get;
+    //登陆按钮
+    Button post;
     //侧滑栏的内容
     private ListView sliderList;
     //主界面的内容
@@ -51,21 +53,18 @@ public class MainActivity extends AppCompatActivity {
     private Map<String,Object> listItem;
     //插入listView的适配器
     private SimpleAdapter simpleAdapter;
-    Handler handler = new Handler()
-    {
+    Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg)
         {
-            if(msg.what == 0x123)
-            {
+            if(msg.what == 0x123) {
                 //设置show组件显示服务器响应
                 Gson gson = new Gson();
                 LoginMsg loginMsg = gson.fromJson(response,LoginMsg.class);
                 JSESSIONID = loginMsg.getJSESSIONID();
                 Toast.makeText(getApplicationContext(),JSESSIONID,Toast.LENGTH_SHORT).show();
             }
-            if(msg.what == 0x124)
-            {
+            if(msg.what == 0x124) {
                 //设置show组件显示服务器响应
                 Toast.makeText(getApplicationContext(),response,Toast.LENGTH_SHORT).show();
             }
@@ -76,11 +75,10 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         myDrawerLayout = (DrawerLayout)findViewById(R.id.drawer_layout);
-        //设置DrawerLayout的监听事件
         post = (Button)findViewById(R.id.post);
-        get = (Button)findViewById(R.id.get);
         listView = (ListView)findViewById(R.id.mylist);
         sliderList = (ListView)findViewById(R.id.menu_list);
+        //设置DrawerLayout的监听事件
         sliderList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -102,7 +100,8 @@ public class MainActivity extends AppCompatActivity {
 //                    listItems.add(listItem);
 //                    System.out.println(stock[i]);
 //                }
-                state = position * 10;
+                //标志：显示选中的功能
+                state = position;
                 //创建一个SimpleAdapter
                 simpleAdapter = new SimpleAdapter(getApplicationContext(), listItems,
                         R.layout.distributor_item,
@@ -146,35 +145,12 @@ public class MainActivity extends AppCompatActivity {
                             //登陆时所需的URL和params语句
                             String url = "http://202.116.161.86:8888/login";
                             String params = "username=222222&password=222222";
-                            response = GetPostUtil.sendPost(url,params,null);
+                            response = SendHttpRequest.sendPost(url,params,null);
                             //如果连接失败，则不进行GSON解析
                             if(response != "")
                             {
                                 handler.sendEmptyMessage(0x123);
                             }
-                        }
-                        catch(Exception e)
-                        {
-                            Log.i("My Android",e.getMessage());
-                        }
-                    }
-                }.start();
-            }
-        });
-        get.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                new Thread()
-                {
-                    @Override
-                    public void run()
-                    {
-                        String url2 = "http://202.116.161.86:8888/distributor/receive";
-                        String params2 = "pageNum=1";
-                        try
-                        {
-                            response = GetPostUtil.sendGet(url2,params2,JSESSIONID);
-                            handler.sendEmptyMessage(0x124);
                         }
                         catch(Exception e)
                         {
@@ -209,8 +185,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
     //长按方式弹出菜单多选方式
-    private void ItemOnLongClick()
-    {
+    private void ItemOnLongClick() {
         listView.setOnCreateContextMenuListener(new View.OnCreateContextMenuListener() {
             @Override
             public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {

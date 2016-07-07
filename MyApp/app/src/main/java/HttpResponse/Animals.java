@@ -1,6 +1,8 @@
-package Data;
+package HttpResponse;
 
 import java.util.List;
+
+import DataClass.Animal;
 
 /**
  * Created by zengtaizhu on 2016/7/6.

@@ -1,13 +1,15 @@
-package Data;
+package HttpResponse;
 
 import java.util.List;
+
+import DataClass.Receive;
 
 /**
  * Created by zengtaizhu on 2016/7/6.
  */
-public class Sales {
-    private int totalItems;//总条目数
-    private List<Sale> results;//出货信息数组
+public class Receives {
+    private int totalItems;
+    private List<Receive> results;
 
     public int getTotalItems() {
         return totalItems;
@@ -17,11 +19,11 @@ public class Sales {
         this.totalItems = totalItems;
     }
 
-    public List<Sale> getResults() {
+    public List<Receive> getResults() {
         return results;
     }
 
-    public void setResults(List<Sale> results) {
+    public void setResults(List<Receive> results) {
         this.results = results;
     }
 }

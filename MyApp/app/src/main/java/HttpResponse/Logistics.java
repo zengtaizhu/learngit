@@ -1,4 +1,4 @@
-package Data;
+package HttpResponse;
 
 import java.util.Date;
 

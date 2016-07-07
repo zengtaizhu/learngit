@@ -1,4 +1,4 @@
-package Data;
+package DataClass;
 
 /**
  * Created by zengtaizhu on 2016/5/6.
