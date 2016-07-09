@@ -1,14 +1,12 @@
 package DataClass;
 
-import java.util.ArrayList;
+import java.io.Serializable;
 import java.util.Date;
-import java.util.List;
 
 /**
  * Created by zengtaizhu on 2016/7/5.
-
  */
-public class Receive {
+public class Receive implements Serializable {
     private String id;//进货信息的id
     private Date date;//进货日期
     private String category;//名称

@@ -1,9 +1,11 @@
 package DataClass;
 
+import java.io.Serializable;
+
 /**
  * Created by zengtaizhu on 2016/7/5.
  */
-public class Disease {
+public class Disease implements Serializable {
     private String id;//生病数据条目在数据库中的存储id
     private String diseaseName;//病名
     private String startDate;//生病的开始日期 格式:yyyy-mm-dd

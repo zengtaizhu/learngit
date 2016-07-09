@@ -96,7 +96,7 @@ public class RequestData {
                 for(int i = 0; i < animalList.size(); i++)
                 {
                     listItem = new HashMap<String, Object>();
-                    listItem.put("animalId", animalList.get(i).getAnimalId());
+                    listItem.put("id", animalList.get(i).getAnimalId());
                     listItem.put("sourceCode", animalList.get(i).getSourceCode());
                     listItem.put("saleBatchNum", animalList.get(i).getSaleBatchNum());
                     listItem.put("state", animalList.get(i).getState());
@@ -108,22 +108,24 @@ public class RequestData {
             case 3:
                 //由于该请求返回一个JsonArray格式的json字符串，应特殊处理
                 realUrl = url + "logistics/" + param;
-                response = SendHttpRequest.sendGet(realUrl, null, JSESSIONID);
-                List<String> array = GetJsonArray.getJsonArray(response);
-                //待删除
-                //List<Logistics> logisticsList = new ArrayList<>();
-                for(int i = 0; i < array.size(); i++)
+                Log.i("Message", realUrl);
+                try {
+                    response = SendHttpRequest.sendGet(realUrl, null, JSESSIONID);
+                    List<String> array = GetJsonArray.getJsonArray(response);
+
+                    for (int i = 0; i < array.size(); i++) {
+                        Logistics logistics = gson.fromJson(array.get(i), Logistics.class);
+                        listItem = new HashMap<String, Object>();
+                        listItem.put("animalId", logistics.getAnimalId());
+                        listItem.put("id", logistics.getId());
+                        listItem.put("position", logistics.getPosition());
+                        listItem.put("time", logistics.getTime());
+                        listItem.put("person", logistics.getPerson());
+                        listItems.add(listItem);
+                    }
+                }catch (Exception e)
                 {
-                    Logistics logistics = gson.fromJson(array.get(i), Logistics.class);
-                    listItem = new HashMap<String, Object>();
-                    listItem.put("animalId", logistics.getAnimalId());
-                    listItem.put("id", logistics.getId());
-                    listItem.put("position", logistics.getPosition());
-                    listItem.put("time", logistics.getTime());
-                    listItem.put("person", logistics.getPerson());
-                    listItems.add(listItem);
-                    //待删除
-                    //logisticsList.add(logistics);
+                    Log.i("Error" , "访问失败");
                 }
                 break;
             case 4:
@@ -131,8 +133,6 @@ public class RequestData {
                 realUrl = url + "aniQua/" + param;
                 response = SendHttpRequest.sendGet(realUrl, null, JSESSIONID);
                 List<String> array2 = GetJsonArray.getJsonArray(response);
-                //待删除
-                //List<Quality> qualityList = new ArrayList<>();
                 for(int i = 0; i < array2.size(); i++)
                 {
                     Quality quality = gson.fromJson(array2.get(i), Quality.class);
@@ -146,8 +146,6 @@ public class RequestData {
                     listItem.put("organization", quality.getOrganization());
                     listItem.put("person", quality.getPerson());
                     listItems.add(listItem);
-                    //待删除
-                    //qualityList.add(quality);
                 }
                 break;
             case 5:
@@ -155,8 +153,6 @@ public class RequestData {
                 realUrl = url + "disease/" + param;
                 response = SendHttpRequest.sendGet(realUrl, null, JSESSIONID);
                 List<String> array3 = GetJsonArray.getJsonArray(response);
-                //待删除
-                //List<Disease> diseaseList = new ArrayList<>();
                 for(int i = 0; i < array3.size(); i++)
                 {
                     Disease disease = gson.fromJson(array3.get(i), Disease.class);
@@ -166,8 +162,6 @@ public class RequestData {
                     listItem.put("endDate", disease.getEndDate());
                     listItem.put("comments", disease.getComments());
                     listItems.add(listItem);
-                    //待删除
-                    //diseaseList.add(disease);
                 }
                 break;
             default:

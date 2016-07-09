@@ -32,8 +32,8 @@
             <ListView
                 android:id="@+id/mylist"
                 android:layout_width="match_parent"
-                android:layout_height="426dp"
-                android:layout_gravity="center" />
+                android:layout_height="500dp"
+                android:layout_gravity="left|bottom|right" />
         </FrameLayout>
 
         <!--导航窗口 -->

@@ -1,11 +1,12 @@
 package DataClass;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
  * Created by zengtaizhu on 2016/7/5.
  */
-public class Logistics {
+public class Logistics implements Serializable {
     private String animalId;//动物的id
     private String id;//物流信息的id
     private String position;//地点

@@ -1,11 +1,12 @@
 package DataClass;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
  * Created by zengtaizhu on 2016/7/5.
  */
-public class Sale {
+public class Sale implements Serializable {
     private String id;//出货信息的id
     private Date date;//出货日期
     private String category;//名称

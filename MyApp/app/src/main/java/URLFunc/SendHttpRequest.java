@@ -147,13 +147,13 @@ public class SendHttpRequest {
      * @param params
      * @param JSESSIONID
      */
-    public static String sendDelete(String url, String params,String JSESSIONID)
+    public static String sendDelete(String url, Object params,String JSESSIONID)
     {
         String result = "";
         BufferedReader in = null;
         try
         {
-            String urlName = url + "?" + params;//--——可以删除params参数
+            String urlName = url + params;
             URL realUrl = new URL(urlName);
             // 打开和URL之间的连接
             HttpURLConnection conn = (HttpURLConnection)realUrl.openConnection();

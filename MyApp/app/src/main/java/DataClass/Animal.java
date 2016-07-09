@@ -1,11 +1,12 @@
 package DataClass;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
  * Created by zengtaizhu on 2016/7/5.
  */
-public class Animal {
+public class Animal implements Serializable {
     private String animalId;//动物的id
     private String sourceCode;//动物的溯源码
     private String saleBatchNum;//出货批次码

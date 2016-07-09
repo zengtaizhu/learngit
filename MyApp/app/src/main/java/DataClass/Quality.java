@@ -1,11 +1,12 @@
 package DataClass;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
  * Created by zengtaizhu on 2016/7/5.
  */
-public class Quality {
+public class Quality implements Serializable {
     private String id;//质检信息的id
     private String batchNumber;//质检批次
     private int sampleNumber;//抽检数量

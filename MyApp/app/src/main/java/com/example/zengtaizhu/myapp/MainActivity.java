@@ -20,11 +20,15 @@ import android.widget.SimpleAdapter;
 import android.widget.TableLayout;
 import android.widget.Toast;
 import com.google.gson.Gson;
+
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import Method.DataInOut;
+import Method.DeleteOnline;
 import Method.RequestData;
 import URLFunc.SendHttpRequest;
 import HttpResponse.LoginMsg;
@@ -33,11 +37,11 @@ import DataClass.Distributor;
 public class MainActivity extends AppCompatActivity {
 
     //分销商的功能
-    Distributor distributor = new Distributor();
+    private Distributor distributor = new Distributor();
     //登陆凭证
-    String JSESSIONID;
+    private String JSESSIONID = null;
     //登陆按钮
-    Button post;
+    private Button post;
     //侧滑栏的内容
     private ListView sliderList;
     //主界面的内容
@@ -54,6 +58,8 @@ public class MainActivity extends AppCompatActivity {
     private Map<String,Object> listItem;
     //插入listView的适配器
     private SimpleAdapter simpleAdapter;
+    //数据保存的文件名
+    public static String[] SaveFileName = new String[]{"receive", "sale", "animal"};
     Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg)
@@ -71,52 +77,38 @@ public class MainActivity extends AppCompatActivity {
             }
             if(msg.what == 0x125)
             {
+                //添加信息到listView上
                 switch (state)
                 {
                     case 0:
-                        //创建一个SimpleAdapter
+                        //创建一个进货信息的SimpleAdapter
                         simpleAdapter = new SimpleAdapter(getApplicationContext(), listItems,
                                 R.layout.receive_item,
                                 new String[]{"category", "date", "disBatchNum", "number"},
                                 new int[]{R.id.category, R.id.date, R.id.disBatchNum, R.id.number});
                         break;
                     case 1:
-                        //创建一个SimpleAdapter
+                        //创建一个出货信息的SimpleAdapter
                         simpleAdapter = new SimpleAdapter(getApplicationContext(), listItems,
                                 R.layout.sale_item,
                                 new String[]{"category", "date", "batchNum", "number"},
                                 new int[]{R.id.category, R.id.date, R.id.batchNum, R.id.number});
                         break;
                     case 2:
-                        //创建一个SimpleAdapter
+                        //创建一个动物信息的SimpleAdapter
                         simpleAdapter = new SimpleAdapter(getApplicationContext(), listItems,
                                 R.layout.animal_item,
                                 new String[]{"sourceCode", "saleBatchNum", "state", "birthday", "category"},
                                 new int[]{R.id.sourceCode, R.id.saleBatchNum, R.id.state, R.id.birthday, R.id.category});
                         break;
-                    case 3:
-                        //创建一个SimpleAdapter
-                        simpleAdapter = new SimpleAdapter(getApplicationContext(), listItems,
-                                R.layout.logistics_item,
-                                new String[]{"id", "position", "time", "person"},
-                                new int[]{R.id.id, R.id.position, R.id.time, R.id.person});
-                        break;
-                    case 4:
-                        //创建一个SimpleAdapter
-                        simpleAdapter = new SimpleAdapter(getApplicationContext(), listItems,
-                                R.layout.aniqua_item,
-                                new String[]{"batchNumber", "sampleNumber", "qualifiedNumber",
-                                        "date", "originId", "organization" , "person"},
-                                new int[]{R.id.batchNumber, R.id.sampleNumber, R.id.qualifiedNumber,
-                                        R.id.date, R.id.originId, R.id.organization, R.id.person});
-                        break;
-                    case 5:
-
-                        break;
                     default:
                         break;
                 }
                 listView.setAdapter(simpleAdapter);
+            }
+            if(msg.what == 0x126)
+            {
+                simpleAdapter.notifyDataSetChanged();
             }
         }
     };
@@ -137,47 +129,44 @@ public class MainActivity extends AppCompatActivity {
                 listItems.clear();
                 //标志：显示选中的功能
                 state = position;
-                new Thread()
+                //如果没有登陆，则使用已经保存的数据
+                if(JSESSIONID == null)
                 {
-                    @Override
-                    public void run()
+                    try
                     {
-                        try
-                        {
-                            //按照选择的功能获取相应的位置
-                            listItems = RequestData.getData(state,1,JSESSIONID);
-                            handler.sendEmptyMessage(0x125);
-                        }
-                        catch (Exception e)
-                        {
-                            Log.i("My Android",e.getMessage());
-                        }
+                        listItems = (List<Map<String,Object>>) DataInOut.readData(getApplicationContext(), SaveFileName[state]);
+                        handler.sendEmptyMessage(0x125);
+                    }catch (Exception e)
+                    {
+                        Log.i("Error", "读取数据失败");
                     }
-                }.start();
-            }
-        });
-        //为主界面的listView添加点击事件
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Toast.makeText(getApplicationContext(), "选中了第" + position + "个", Toast.LENGTH_SHORT).show();
-                //代表各自的
-                Intent intent;
-                Bundle bundle = new Bundle();
-                bundle.putInt("No", position);
-                //添加每个管理功能的功能项界面
-                switch (state) {
-                    case 0:
-                        intent = new Intent(MainActivity.this, Receiver.class);
-                        intent.putExtras(bundle);
-                        startActivity(intent);
-                        break;
-                    case 1:
-
+                }
+                else{
+                    //如果已经登陆，则更新已有的数据
+                    new Thread()
+                    {
+                        @Override
+                        public void run()
+                        {
+                            try
+                            {
+                                //按照选择的功能获取相应的位置
+                                listItems = RequestData.getData(state,1,JSESSIONID);
+                                //存储数据
+                                DataInOut.saveData(getApplicationContext(), listItems, SaveFileName[state]);
+                                handler.sendEmptyMessage(0x125);
+                            }
+                            catch (Exception e)
+                            {
+                                Log.i("Error",e.getMessage());
+                            }
+                        }
+                    }.start();
                 }
             }
         });
         ItemOnLongClick();
+        //登陆按钮
         post.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -206,8 +195,8 @@ public class MainActivity extends AppCompatActivity {
                 }.start();
             }
         });
-
         Button get = (Button)findViewById(R.id.get);
+        //接收信息按钮
         get.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -263,29 +252,74 @@ public class MainActivity extends AppCompatActivity {
                 //menu.setHeaderTitle("更多操作");
                 menu.add(0,0,0,"更新该信息");
                 menu.add(0,1,0,"删除该信息");
+                //当查看动物信息时，可以查看该动物的物流、质检和生病信息
+                if(state == 2)
+                {
+                    menu.add(0,2,0,"查看物流信息");
+                    menu.add(0,3,0,"查看质检信息");
+                    menu.add(0,4,0,"查看生病信息");
+                }
             }
         });
     }
     // 长按菜单响应函数
     public boolean onContextItemSelected(MenuItem item) {
-        int selectedPosition = ((AdapterView.AdapterContextMenuInfo) item.getMenuInfo()).position;
+        final int selectedPosition = ((AdapterView.AdapterContextMenuInfo) item.getMenuInfo()).position;
         switch (item.getItemId()) {
             case 0:
                 // 更新操作
-//                Toast.makeText(getApplicationContext(),
-//                        "更新",
-//                        Toast.LENGTH_SHORT).show();
                 //打开对话框
                 distView(selectedPosition);
                 break;
             case 1:
                 // 删除操作
-                Toast.makeText(getApplicationContext(),
-                        "删除",
-                        Toast.LENGTH_SHORT).show();
-                //删除所选的一列
-                listItems.remove(selectedPosition);
-                simpleAdapter.notifyDataSetChanged();
+                //删除选中信息，包括网络上的资源以及界面的listView
+                new Thread()
+                {
+                    @Override
+                    public void run()
+                    {
+                        //已经登陆，则同时删除网络资源
+                        if(JSESSIONID != null)
+                        {
+                            Object deleteID = null;
+                            switch (selectedPosition)
+                            {
+                                case 0:
+                                case 1:
+                                    deleteID = listItems.get(selectedPosition).get("id");
+                                    break;
+                                case 2:
+                                    deleteID = listItems.get(selectedPosition).get("animalId");
+                            }
+                            //删除所选中的网络资源
+                            DeleteOnline.DeleteData(state, deleteID, JSESSIONID);
+                        }
+                        //删除listItems中所选中的一列
+                        listItems.remove(selectedPosition);
+                        //更新保存在本地的数据
+                        DataInOut.saveData(getApplicationContext(), listItems, SaveFileName[state]);
+                        //通知listView更新
+                        handler.sendEmptyMessage(0x126);
+                    }
+                }.start();
+                break;
+            case 2:
+                //跳转到下一个Activity并显示该动物的物流信息
+            case 3:
+                //跳转到下一个Activity并显示该动物的质检信息
+            case 4:
+                //跳转到下一个Activity并显示该动物的生病信息
+                Intent intent;
+                Bundle bundle = new Bundle();
+                String animalId = listItems.get(selectedPosition).get("id").toString();
+                //将该动物的id、查看的选项以及登陆凭证传送过去
+                bundle.putString("animalId", animalId);
+                bundle.putInt("selectedItem", item.getItemId() + 1);
+                bundle.putString("JSESSIONID", JSESSIONID);
+                intent = new Intent(MainActivity.this, Receiver.class);
+                intent.putExtras(bundle);
+                startActivity(intent);
                 break;
             default:
                 break;
@@ -294,7 +328,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     //打开一个自定义AlertDialog，用于增加或修改一条信息
-    public void distView(final int selectedPosition)
+    private void distView(final int selectedPosition)
     {
         //装载app\src\main\res\layout\distributor_dialog.xml界面布局文件
         TableLayout layoutForm = (TableLayout)getLayoutInflater()
@@ -329,7 +363,7 @@ public class MainActivity extends AppCompatActivity {
                 .setNegativeButton("取消", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        //取消添加或修改信息
+                        //取消操作
                     }
                 })
                 //创建并显示对话框

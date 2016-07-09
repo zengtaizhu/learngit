@@ -1,10 +1,12 @@
 package DataClass;
 
+import java.io.Serializable;
+
 /**
  * Created by zengtaizhu on 2016/5/6.
  * 用于存放所有信息管理的功能项
  */
-public class Distributor {
+public class Distributor implements Serializable {
     private String[] receive;    //进货信息管理
     private String[] sale;     //出货信息管理
     private String[] animal;   //产品信息管理
