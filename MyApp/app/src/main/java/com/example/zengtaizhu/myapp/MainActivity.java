@@ -109,6 +109,10 @@ public class MainActivity extends AppCompatActivity {
             {
                 simpleAdapter.notifyDataSetChanged();
             }
+            if(msg.what == 0x127)
+            {
+                Toast.makeText(getApplicationContext(), "操作失败，请稍后尝试", Toast.LENGTH_SHORT).show();
+            }
         }
     };
     @Override
@@ -361,6 +365,8 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void run()
                     {
+                        //判断修改或添加是否有效
+                        boolean isSuccess = false;
                         switch (state)
                         {
                             case 0:
@@ -379,6 +385,7 @@ public class MainActivity extends AppCompatActivity {
                                     if(result.contains("success"))
                                     {
                                         Log.i("Modify", "进货信息修改成功");
+                                        isSuccess = true;
                                     }
                                     else
                                     {
@@ -395,6 +402,7 @@ public class MainActivity extends AppCompatActivity {
                                     if(result.contains("success"))
                                     {
                                         Log.i("Add", "进货信息添加成功");
+                                        isSuccess = true;
                                     }
                                     else
                                     {
@@ -418,6 +426,7 @@ public class MainActivity extends AppCompatActivity {
                                     if(result.contains("success"))
                                     {
                                         Log.i("Modify", "进货信息修改成功");
+                                        isSuccess = true;
                                     }
                                     else
                                     {
@@ -434,6 +443,7 @@ public class MainActivity extends AppCompatActivity {
                                     if(result.contains("success"))
                                     {
                                         Log.i("Sale", "出货信息添加成功");
+                                        isSuccess = true;
                                     }
                                     else
                                     {
@@ -457,6 +467,7 @@ public class MainActivity extends AppCompatActivity {
                                     if(result.contains("success"))
                                     {
                                         Log.i("Animal", "动物信息更新成功");
+                                        isSuccess = true;
                                     }
                                     else
                                     {
@@ -474,6 +485,7 @@ public class MainActivity extends AppCompatActivity {
                                     if(result.contains("success"))
                                     {
                                         Log.i("Animal", "添加动物信息成功");
+                                        isSuccess = true;
                                     }
                                     else
                                     {
@@ -482,14 +494,22 @@ public class MainActivity extends AppCompatActivity {
                                 }
                                 break;
                         }
-                        //清除旧数据
-                        listItems.clear();
-                        //重新从网络上获取新数据
-                        listItems = RequestData.getData(state,1,JSESSIONID);
-                        //存储数据
-                        DataInOut.saveData(getApplicationContext(), listItems, SaveFileName[state]);
-                        //通知更新ListView的内容
-                        handler.sendEmptyMessage(0x125);
+                        if(isSuccess)
+                        {
+                            //清除旧数据
+                            listItems.clear();
+                            //重新从网络上获取新数据
+                            listItems = RequestData.getData(state,1,JSESSIONID);
+                            //存储数据
+                            DataInOut.saveData(getApplicationContext(), listItems, SaveFileName[state]);
+                            //通知更新ListView的内容
+                            handler.sendEmptyMessage(0x125);
+                        }
+                        else
+                        {
+                            //通知操作失误
+                            handler.sendEmptyMessage(0x127);
+                        }
                     }
                 }.start();
             }
