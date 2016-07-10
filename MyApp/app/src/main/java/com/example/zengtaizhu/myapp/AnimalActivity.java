@@ -1,13 +1,15 @@
 package com.example.zengtaizhu.myapp;
 
-import android.app.Activity;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.ContextMenu;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
@@ -17,11 +19,9 @@ import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.TableLayout;
 import android.widget.Toast;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
 import Method.DataInOut;
 import Method.DeleteOnline;
 import Method.RequestData;
@@ -31,7 +31,7 @@ import Method.SendHttpRequest;
  * 用于显示动物的具体信息
  *
  */
-public class AnimalActivity extends Activity {
+public class AnimalActivity extends AppCompatActivity {
 
     //该界面上的ListView
     private ListView listView;
@@ -114,13 +114,33 @@ public class AnimalActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_receiver);
-        show = (Button) findViewById(R.id.show);
-        listView = (ListView)findViewById(R.id.list);
         bundle = this.getIntent().getExtras();
         //获得传送过来的信息
         animalId = bundle.getString("animalId");
         selectedItem = bundle.getInt("selectedItem");
         JSESSIONID = bundle.getString("JSESSIONID");
+        //ToolBar标题
+        String title;
+        switch (selectedItem)
+        {
+            case 3:
+                title = "动物物流信息";
+                break;
+            case 4:
+                title = "动物质检信息";
+                break;
+            case 5:
+            default:
+                title = "动物生病信息";
+        }
+        //设置ActionBar为toolbar，代表原本的 Actionbar
+        Toolbar toolbar = (Toolbar)findViewById(R.id.toolbar);
+        toolbar.setTitle(title);
+        setSupportActionBar(toolbar);
+        //为ToolBar添加事件
+        toolbar.setOnMenuItemClickListener(onMenuItemClick);
+        show = (Button) findViewById(R.id.show);
+        listView = (ListView)findViewById(R.id.list);
         new Thread(){
             @Override
             public void run()
@@ -331,4 +351,25 @@ public class AnimalActivity extends Activity {
                 .show();
     }
 
+    private Toolbar.OnMenuItemClickListener onMenuItemClick = new Toolbar.OnMenuItemClickListener() {
+        @Override
+        public boolean onMenuItemClick(MenuItem item) {
+            switch (item.getItemId())
+            {
+                case R.id.add:
+                    //Toast.makeText(getApplicationContext(), "添加信息", Toast.LENGTH_SHORT).show();
+                    //弹出增加信息的对话框
+                    distView(-1);
+                    break;
+            }
+            return false;
+        }
+    };
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // 使得Toolbar的Menu生效
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
 }

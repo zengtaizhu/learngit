@@ -8,24 +8,24 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
-import android.widget.TableLayout;
 import android.widget.Toast;
 import com.google.gson.Gson;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
 import Method.DataInOut;
 import Method.DeleteOnline;
 import Method.RequestData;
@@ -33,7 +33,7 @@ import Method.SendHttpRequest;
 import HttpResponse.LoginMsg;
 import DataClass.Distributor;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity{
 
     //分销商的功能
     private Distributor distributor = new Distributor();
@@ -41,6 +41,8 @@ public class MainActivity extends AppCompatActivity {
     private String JSESSIONID = null;
     //登陆按钮
     private Button post;
+    //更多按钮
+    private ImageButton more;
     //侧滑栏的内容
     private ListView sliderList;
     //主界面的内容
@@ -52,7 +54,7 @@ public class MainActivity extends AppCompatActivity {
     //传输到主界面的listView中
     private List<Map<String, Object>> listItems = new ArrayList<Map<String, Object>>();
     //标志，标明目前的功能
-    private int state;
+    private int state = -1;
     //显示在listView中的信息
     private Map<String,Object> listItem;
     //插入listView的适配器
@@ -119,8 +121,15 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        //设置ActionBar为toolbar，代表原本的 Actionbar
+        Toolbar toolbar = (Toolbar)findViewById(R.id.toolbar);
+        toolbar.setTitle("溯源系统");
+        setSupportActionBar(toolbar);
+        //为ToolBar添加事件
+        toolbar.setOnMenuItemClickListener(onMenuItemClick);
         myDrawerLayout = (DrawerLayout)findViewById(R.id.drawer_layout);
         post = (Button)findViewById(R.id.post);
+        more = (ImageButton)findViewById(R.id.more);
         listView = (ListView)findViewById(R.id.mylist);
         sliderList = (ListView)findViewById(R.id.menu_list);
         //设置DrawerLayout的监听事件
@@ -198,29 +207,11 @@ public class MainActivity extends AppCompatActivity {
                 }.start();
             }
         });
-        Button get = (Button)findViewById(R.id.get);
-        //接收信息按钮
-        get.setOnClickListener(new View.OnClickListener() {
+        //“更多”按钮
+        more.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
-                new Thread()
-                {
-                    @Override
-                    public void run()
-                    {
-                        String url2 = "http://202.116.161.86:8888/distributor/receive";
-                        String params2 = "pageNum=1";
-                        try
-                        {
-                            response = SendHttpRequest.sendGet(url2,params2,JSESSIONID);
-                            handler.sendEmptyMessage(0x124);
-                        }
-                        catch(Exception e)
-                        {
-                            Log.i("My Android",e.getMessage());
-                        }
-                    }
-                }.start();
+            public void onClick(View v) {
+
             }
         });
         //侧滑栏的监听事件----可删除，或添加动画
@@ -336,6 +327,8 @@ public class MainActivity extends AppCompatActivity {
         AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
         LayoutInflater factory = LayoutInflater.from(this);
         final View textEntryView;
+        //对话框标题
+        String title;
         switch (state)
         {
             case 0:
@@ -352,8 +345,16 @@ public class MainActivity extends AppCompatActivity {
                     textEntryView = factory.inflate(R.layout.animal_dialog, null);
                 break;
         }
+        if(selectedPosition >= 0)
+        {
+            title = "修改信息对话框";
+        }
+        else
+        {
+            title = "更新信息对话框";
+        }
         //设置对话框的标题
-        builder.setTitle("对话框");
+        builder.setTitle(title);
         //设置对话框显示的view对象
         builder.setView(textEntryView);
         //为对话框设置一个“确定”的按钮
@@ -395,7 +396,7 @@ public class MainActivity extends AppCompatActivity {
                                 else
                                 {
                                     //添加信息
-                                    String url = "http://202.116.161.86:8888/distributor/receive/";
+                                    String url = "http://202.116.161.86:8888/distributor/receive";
                                     String params = "{\"date\":\"" + disDate + "\",\"category\":\""
                                             + disName + "\",\"disBatchNum\":\"" + disBatchNum + "\"}";
                                     String result = SendHttpRequest.sendPost(url, params, JSESSIONID);
@@ -406,7 +407,7 @@ public class MainActivity extends AppCompatActivity {
                                     }
                                     else
                                     {
-                                        Log.i("Add", "进货信息添加失败");
+                                        Log.i("AddError", "进货信息添加失败");
                                     }
                                 }
                                 break;
@@ -447,7 +448,7 @@ public class MainActivity extends AppCompatActivity {
                                     }
                                     else
                                     {
-                                        Log.i("Sale", "出货信息添加失败");
+                                        Log.i("Sale", params + result);
                                     }
                                 }
                                 break;
@@ -489,7 +490,7 @@ public class MainActivity extends AppCompatActivity {
                                     }
                                     else
                                     {
-                                        Log.i("Animal", "添加动物信息失败");
+                                        Log.i("Animal", params + result);
                                     }
                                 }
                                 break;
@@ -518,5 +519,28 @@ public class MainActivity extends AppCompatActivity {
         builder.setNegativeButton("取消", null);
         //创建并显示对话框
         builder.create().show();
+    }
+
+    private Toolbar.OnMenuItemClickListener onMenuItemClick = new Toolbar.OnMenuItemClickListener() {
+        @Override
+        public boolean onMenuItemClick(MenuItem item) {
+            switch (item.getItemId())
+            {
+                case R.id.add:
+                    //Toast.makeText(getApplicationContext(), "添加信息", Toast.LENGTH_SHORT).show();
+                    //弹出增加信息的对话框
+                    if(state >= 0)
+                        distView(-1);
+                    break;
+            }
+            return false;
+        }
+    };
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // 使得Toolbar的Menu生效
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
     }
 }

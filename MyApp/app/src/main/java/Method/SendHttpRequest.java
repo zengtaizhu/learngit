@@ -76,7 +76,7 @@ public class SendHttpRequest {
      * @param params 请求参数，请求参数应该是name1=value1&name2=value2的形式。
      * @return URL所代表远程资源的响应
      */
-    public static String sendPost(String url, String params,String JSESSIONID)
+    public static String sendPost(String url,String params, String JSESSIONID)
     {
         PrintWriter out = null;
         BufferedReader in = null;
@@ -92,7 +92,6 @@ public class SendHttpRequest {
             // 设置通用的请求属性
             if(null != JSESSIONID)
             {
-                //当存在JSESSIONID时，即已经登录后，请求的属性要加上JSESSIONID以及请求的内容改为json
                 conn.setRequestProperty("Cookie", "JSESSIONID="+JSESSIONID);
                 conn.setRequestProperty("Content-Type","application/json");
             }
@@ -102,7 +101,7 @@ public class SendHttpRequest {
             // 获取URLConnection对象对应的输出流
             out = new PrintWriter(conn.getOutputStream());
             // 发送请求参数
-            out.print(params);  //
+            out.print(params);
             // flush输出流的缓冲
             out.flush();
             // 定义BufferedReader输入流来读取URL的响应
