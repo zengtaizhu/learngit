@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/animalDialog">
+    <TableRow>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="10pt"
+            android:text="溯源码："/>
+        <!--输入货品名称的文本框-->
+        <EditText
+            android:id="@+id/sourceCode"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="请填写动物的溯源码"
+            />
+    </TableRow>
+
+    <TableRow>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="10pt"
+            android:text="出货批次码："/>
+        <!--输入进货批次号的文本框-->
+        <EditText
+            android:id="@+id/saleBatchNum"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="请填写出货批次码"/>
+    </TableRow>
+</TableLayout>

@@ -25,12 +25,13 @@ import java.util.Map;
 import Method.DataInOut;
 import Method.DeleteOnline;
 import Method.RequestData;
+import Method.SendHttpRequest;
 
 /**
  * 用于显示动物的具体信息
  *
  */
-public class Receiver extends Activity {
+public class AnimalActivity extends Activity {
 
     //该界面上的ListView
     private ListView listView;
@@ -225,36 +226,97 @@ public class Receiver extends Activity {
         return super.onContextItemSelected(item);
     }
 
-    //打开一个自定义AlertDialog，用于增加或修改一条信息
+    /**
+     * 打开一个自定义AlertDialog，用于增加或修改一条信息
+     * @param selectedPosition 当该值大于等于0，是由长按并点击修改按钮而触发的事件，代表要修改的信息的位置
+     *                        当该值小于0时，是由添加信息而触发的事件
+     */
     private void distView(final int selectedPosition)
     {
-        //装载app\src\main\res\layout\distributor_dialog.xml界面布局文件
+        //装载app\src\main\res\layout\logistics_dialog.xml界面布局文件
         TableLayout layoutForm = (TableLayout)getLayoutInflater()
-                .inflate(R.layout.distributor_dialog, null);
+                .inflate(R.layout.logistics_dialog, null);
+        //对话框标题
+        final String title;
+        if(selectedPosition >= 0)
+        {
+            title = "修改信息";
+        }
+        else
+        {
+            title = "添加信息";
+        }
         new AlertDialog.Builder(this)
                 //设置对话框的图标
                 .setIcon(R.drawable.title)
                 //设置对话框的标题
-                .setTitle("对话框")
+                .setTitle(title)
                 //设置对话框显示的view对象
                 .setView(layoutForm)
                 //为对话框设置一个“确定”的按钮
                 .setPositiveButton("确定", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        EditText disName = (EditText)findViewById(R.id.disName);
-                        EditText disDate = (EditText)findViewById(R.id.disDate);
-                        EditText disBatchNum = (EditText)findViewById(R.id.disBatchNum);
-                        //添加或修改信息到本地以及上传到服务器
-                        listItem = listItems.get(selectedPosition);
-                        String s = disBatchNum.getText().toString();
-                        listItems.set(selectedPosition,listItem);
-                        listItem.put("date",R.id.disDate);
-                        listItem.put("name",R.id.disName);
-                        listItem.put("disBatchNum",R.id.disBatchNum);
-                        listItem.put("number",0);
-                        listItems.add(listItem);
-                        simpleAdapter.notifyDataSetChanged();
+                        new Thread()
+                        {
+                            @Override
+                            public void run()
+                            {
+                                //获得对话框录入的信息
+                                String position = ((EditText)findViewById(R.id.position)).getText().toString();
+                                String time = ((EditText)findViewById(R.id.date)).getText().toString();
+                                String person = ((EditText)findViewById(R.id.person)).getText().toString();
+                                String result = null;
+                                listItem = listItems.get(selectedPosition);
+                                //添加或修改信息到本地以及上传到服务器
+                                if(selectedPosition >= 0)
+                                {
+                                    //修改信息
+                                    String logisticsId = listItem.get("logisticsId").toString();
+                                    String url = "http://202.116.161.86:8888/distributor/logistics/"
+                                            + animalId + "/" + logisticsId;
+                                    String params = "{\"animalId\":\"" + animalId + "\",\"logisticsId\":\"" +
+                                            logisticsId + "\",\"position\":\"" + position + "\",\"time\":\"" +
+                                            time + "\",\"person\":\"" + person +"\"}";
+                                    result = SendHttpRequest.sendPost(url, params, JSESSIONID);
+                                    if(result.contains("success"))
+                                    {
+                                        Log.i("Modify", "修改物流信息成功");
+                                    }
+                                    else
+                                    {
+                                        Log.i("Modify", "修改物流信息失败");
+                                    }
+                                    listItem.put("animalId", animalId);
+                                    listItem.put("id", logisticsId);
+                                    listItem.put("position", position);
+                                    listItem.put("time", time);
+                                    listItem.put("person", person);
+                                    //替代原来的信息
+                                    listItems.set(selectedPosition, listItem);
+                                }
+                                else
+                                {
+                                    //添加信息
+                                    String url = "http://202.116.161.86:8888/distributor/logistics/"
+                                            + animalId;
+                                    String params = "{\"animalId\":\"" + animalId + "\",\"position\":\"" + position +
+                                            "\",\"time\":\"" + time + "\",\"person\":\"" + person +"\"}";
+                                    result = SendHttpRequest.sendPost(url, params, JSESSIONID);
+                                    //获得物流的id，result格式{"id":"123123..."}
+                                    String id = result.substring(7, result.length() - 2);
+                                    //新增一个新的信息
+                                    listItem.put("animalId", animalId);
+                                    listItem.put("id", id);
+                                    listItem.put("position", position);
+                                    listItem.put("time", time);
+                                    listItem.put("person", person);
+                                    listItems.add(listItem);
+                                }
+                                //通知ListView界面更新
+                                handler.sendEmptyMessage(0x114);
+                            }
+                        }.start();
                     }
                 })
                 //为对话框设置一个“取消”按钮

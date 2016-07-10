@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/layoutForm"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <TableRow>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="10pt"
+            android:text="货品名称："/>
+        <!--输入货品名称的文本框-->
+        <EditText
+            android:id="@+id/disName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="请填写货品名称" />
+    </TableRow>
+    <TableRow>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="进货日期："
+            android:textSize="10pt"/>
+        <!--输入进货日期的文本框-->
+        <EditText
+            android:id="@+id/disDate"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="日期格式：2016-01-01"
+            android:selectAllOnFocus="true"/>
+    </TableRow>
+    <TableRow>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="10pt"
+            android:text="进货批次号："/>
+        <!--输入进货批次号的文本框-->
+        <EditText
+            android:id="@+id/disBatchNum"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="请输入进货批次号"/>
+    </TableRow>
+</TableLayout>

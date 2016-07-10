@@ -10,6 +10,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.ContextMenu;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
@@ -21,16 +22,14 @@ import android.widget.TableLayout;
 import android.widget.Toast;
 import com.google.gson.Gson;
 
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import Method.DataInOut;
 import Method.DeleteOnline;
 import Method.RequestData;
-import URLFunc.SendHttpRequest;
+import Method.SendHttpRequest;
 import HttpResponse.LoginMsg;
 import DataClass.Distributor;
 
@@ -317,7 +316,7 @@ public class MainActivity extends AppCompatActivity {
                 bundle.putString("animalId", animalId);
                 bundle.putInt("selectedItem", item.getItemId() + 1);
                 bundle.putString("JSESSIONID", JSESSIONID);
-                intent = new Intent(MainActivity.this, Receiver.class);
+                intent = new Intent(MainActivity.this, AnimalActivity.class);
                 intent.putExtras(bundle);
                 startActivity(intent);
                 break;
@@ -330,44 +329,174 @@ public class MainActivity extends AppCompatActivity {
     //打开一个自定义AlertDialog，用于增加或修改一条信息
     private void distView(final int selectedPosition)
     {
-        //装载app\src\main\res\layout\distributor_dialog.xml界面布局文件
-        TableLayout layoutForm = (TableLayout)getLayoutInflater()
-                .inflate(R.layout.distributor_dialog, null);
-        new AlertDialog.Builder(this)
-                //设置对话框的图标
-                .setIcon(R.drawable.title)
-                //设置对话框的标题
-                .setTitle("对话框")
-                //设置对话框显示的view对象
-                .setView(layoutForm)
-                //为对话框设置一个“确定”的按钮
-                .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+        LayoutInflater factory = LayoutInflater.from(this);
+        final View textEntryView;
+        switch (state)
+        {
+            case 0:
+                textEntryView = factory.inflate(R.layout.receive_dialog, null);
+                break;
+            case 1:
+                textEntryView = factory.inflate(R.layout.sale_dialog, null);
+                break;
+            case 2:
+            default:
+                if(selectedPosition >= 0)
+                    textEntryView = factory.inflate(R.layout.animal_dialog2, null);
+                else
+                    textEntryView = factory.inflate(R.layout.animal_dialog, null);
+                break;
+        }
+        //设置对话框的标题
+        builder.setTitle("对话框");
+        //设置对话框显示的view对象
+        builder.setView(textEntryView);
+        //为对话框设置一个“确定”的按钮
+        builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                new Thread()
+                {
                     @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        EditText disName = (EditText)findViewById(R.id.disName);
-                        EditText disDate = (EditText)findViewById(R.id.disDate);
-                        EditText disBatchNum = (EditText)findViewById(R.id.disBatchNum);
-                        //添加或修改信息到本地以及上传到服务器
-                        listItem = listItems.get(selectedPosition);
-                        String s = disBatchNum.getText().toString();
-                        listItems.set(selectedPosition,listItem);
-                        listItem.put("date",R.id.disDate);
-                        listItem.put("name",R.id.disName);
-                        listItem.put("disBatchNum",R.id.disBatchNum);
-                        listItem.put("number",0);
-                        listItems.add(listItem);
-                        simpleAdapter.notifyDataSetChanged();
+                    public void run()
+                    {
+                        switch (state)
+                        {
+                            case 0:
+                                String disName =  ((EditText)textEntryView.findViewById(R.id.disName)).getText().toString();
+                                String disDate = ((EditText)textEntryView.findViewById(R.id.disDate)).getText().toString();
+                                String disBatchNum = ((EditText)textEntryView.findViewById(R.id.disBatchNum)).getText().toString();
+                                if(selectedPosition >= 0)
+                                {
+                                    //更新信息
+                                    //获取选中信息的id
+                                    String id = listItems.get(selectedPosition).get("id").toString();
+                                    String url = "http://202.116.161.86:8888/distributor/receive/" + id;
+                                    String params = "{\"id\":\"" + id +"\",\"date\":\"" + disDate +
+                                            "\",\"category\":\"" + disName + "\",\"disBatchNum\":\"" + disBatchNum + "\"}";
+                                    String result = SendHttpRequest.sendPut(url, params, JSESSIONID);
+                                    if(result.contains("success"))
+                                    {
+                                        Log.i("Modify", "进货信息修改成功");
+                                    }
+                                    else
+                                    {
+                                        Log.i("Modify", "进货信息修改失败");
+                                    }
+                                }
+                                else
+                                {
+                                    //添加信息
+                                    String url = "http://202.116.161.86:8888/distributor/receive/";
+                                    String params = "{\"date\":\"" + disDate + "\",\"category\":\""
+                                            + disName + "\",\"disBatchNum\":\"" + disBatchNum + "\"}";
+                                    String result = SendHttpRequest.sendPost(url, params, JSESSIONID);
+                                    if(result.contains("success"))
+                                    {
+                                        Log.i("Add", "进货信息添加成功");
+                                    }
+                                    else
+                                    {
+                                        Log.i("Add", "进货信息添加失败");
+                                    }
+                                }
+                                break;
+                            case 1:
+                                String name = ((EditText)textEntryView.findViewById(R.id.name)).getText().toString();
+                                String date = ((EditText)textEntryView.findViewById(R.id.date)).getText().toString();
+                                String batchNum = ((EditText)textEntryView.findViewById(R.id.batchNum)).getText().toString();
+                                if(selectedPosition >=0 )
+                                {
+                                    //更新信息
+                                    //获取选中信息的id
+                                    String id = listItems.get(selectedPosition).get("id").toString();
+                                    String url = "http://202.116.161.86:8888/distributor/sale/" + id;
+                                    String params = "{\"id\":\"" + id +"\",\"date\":\"" + date + "\",\"category\":\""
+                                            + name + "\",\"batchNum\":\"" + batchNum + "\"}";
+                                    String result = SendHttpRequest.sendPut(url, params, JSESSIONID);
+                                    if(result.contains("success"))
+                                    {
+                                        Log.i("Modify", "进货信息修改成功");
+                                    }
+                                    else
+                                    {
+                                        Log.i("Modify", "进货信息修改失败");
+                                    }
+                                }
+                                else
+                                {
+                                    //添加信息
+                                    String url = "http://202.116.161.86:8888/distributor/sale/";
+                                    String params = "{\"date\":\"" + date + "\",\"category\":\""
+                                            + name + "\",\"batchNum\":\"" + batchNum + "\"}";
+                                    String result = SendHttpRequest.sendPost(url, params, JSESSIONID);
+                                    if(result.contains("success"))
+                                    {
+                                        Log.i("Sale", "出货信息添加成功");
+                                    }
+                                    else
+                                    {
+                                        Log.i("Sale", "出货信息添加失败");
+                                    }
+                                }
+                                break;
+                            case 2:
+                            default:
+                                String saleBatchNum = ((EditText)textEntryView.findViewById(R.id.saleBatchNum)).getText().toString();
+                                if(selectedPosition >= 0)
+                                {
+                                    //更新信息
+                                    //获取选中信息的id
+                                    String id = listItems.get(selectedPosition).get("id").toString();
+                                    String state = ((EditText)textEntryView.findViewById(R.id.state)).getText().toString();
+                                    String url = "http://202.116.161.86:8888/distributor/animal/" + id;
+                                    String params = "{\"animalId\":\"" + id + "\",\"saleBatchNum\":\"" +
+                                            saleBatchNum + "\",\"state\":\"" + state + "\"}";
+                                    String result = SendHttpRequest.sendPut(url, params, JSESSIONID);
+                                    if(result.contains("success"))
+                                    {
+                                        Log.i("Animal", "动物信息更新成功");
+                                    }
+                                    else
+                                    {
+                                        Log.i("Animal", "动物信息更新失败");
+                                    }
+                                }
+                                else
+                                {
+                                    //添加信息
+                                    String sourceCode = ((EditText)textEntryView.findViewById(R.id.sourceCode)).getText().toString();
+                                    String url = "http://202.116.161.86:8888/distributor/animal";
+                                    String params = "{\"sourceCode\":\"" + sourceCode +
+                                            "\",\"saleBatchNum\":\"" + saleBatchNum + "\"}";
+                                    String result = SendHttpRequest.sendPost(url, params, JSESSIONID);
+                                    if(result.contains("success"))
+                                    {
+                                        Log.i("Animal", "添加动物信息成功");
+                                    }
+                                    else
+                                    {
+                                        Log.i("Animal", "添加动物信息失败");
+                                    }
+                                }
+                                break;
+                        }
+                        //清除旧数据
+                        listItems.clear();
+                        //重新从网络上获取新数据
+                        listItems = RequestData.getData(state,1,JSESSIONID);
+                        //存储数据
+                        DataInOut.saveData(getApplicationContext(), listItems, SaveFileName[state]);
+                        //通知更新ListView的内容
+                        handler.sendEmptyMessage(0x125);
                     }
-                })
-                //为对话框设置一个“取消”按钮
-                .setNegativeButton("取消", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        //取消操作
-                    }
-                })
-                //创建并显示对话框
-                .create()
-                .show();
+                }.start();
+            }
+        });
+        //为对话框设置一个“取消”按钮
+        builder.setNegativeButton("取消", null);
+        //创建并显示对话框
+        builder.create().show();
     }
 }

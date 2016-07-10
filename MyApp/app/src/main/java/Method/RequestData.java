@@ -17,7 +17,6 @@ import HttpResponse.Animals;
 import DataClass.Logistics;
 import HttpResponse.Receives;
 import HttpResponse.Sales;
-import URLFunc.SendHttpRequest;
 
 /**
  * Created by zengtaizhu on 2016/7/7.

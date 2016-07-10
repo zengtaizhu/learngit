@@ -2,8 +2,6 @@ package Method;
 
 import android.util.Log;
 
-import URLFunc.SendHttpRequest;
-
 /**
  * Created by zengtaizhu on 2016/7/8.
  */

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/animalModifyDialog">
+    <TableRow>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="10pt"
+            android:text="出货批次码："/>
+        <!--输入进货批次号的文本框-->
+        <EditText
+            android:id="@+id/saleBatchNum"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="请填写出货批次码"/>
+    </TableRow>
+    <TableRow>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="10pt"
+            android:text="动物状态："/>
+        <!--输入货品名称的文本框-->
+        <EditText
+            android:id="@+id/state"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="请填写动物的状态"
+            />
+    </TableRow>
+</TableLayout>
