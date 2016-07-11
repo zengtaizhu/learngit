@@ -1,6 +1,7 @@
 package com.example.zengtaizhu.myapp;
 
 import android.content.DialogInterface;
+import android.content.Loader;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -148,22 +149,8 @@ public class AnimalActivity extends AppCompatActivity {
                 //如果没有登陆，则使用已经保存的数据
                 if(JSESSIONID == null)
                 {
-                    try
-                    {
-                        listItems = (List<Map<String,Object>>) DataInOut.readData(getApplicationContext(), SaveFileName[selectedItem] + animalId);
-                        if(listItems != null)
-                        {
-                            handler.sendEmptyMessage(0x113);
-                        }
-                        else
-                        {
-                            //没有数据时，提醒
-                            handler.sendEmptyMessage(0x111);
-                        }
-                    }catch (Exception e)
-                    {
-                        Log.i("Error", "读取数据失败");
-                    }
+                    //加载本地缓存数据，并显示在界面上
+                    LoadLocalData();
                 }
                 else
                 {
@@ -359,6 +346,29 @@ public class AnimalActivity extends AppCompatActivity {
         builder.setNegativeButton("取消", null);
         //创建并显示对话框
         builder.create().show();
+    }
+
+    /**
+     * 加载本地的缓存数据，并显示在界面上
+     */
+    private void LoadLocalData()
+    {
+        try
+        {
+            listItems = (List<Map<String,Object>>) DataInOut.readData(getApplicationContext(), SaveFileName[selectedItem] + animalId);
+            if(listItems != null)
+            {
+                handler.sendEmptyMessage(0x113);
+            }
+            else
+            {
+                //没有数据时，提醒
+                handler.sendEmptyMessage(0x111);
+            }
+        }catch (Exception e)
+        {
+            Log.i("Error", "读取数据失败");
+        }
     }
 
     private Toolbar.OnMenuItemClickListener onMenuItemClick = new Toolbar.OnMenuItemClickListener() {

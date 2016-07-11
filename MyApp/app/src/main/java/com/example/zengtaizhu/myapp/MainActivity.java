@@ -565,7 +565,7 @@ public class MainActivity extends AppCompatActivity{
     }
 
     /**
-     * 加载本地的缓冲数据，并显示在界面上
+     * 加载本地的缓存数据，并显示在界面上
      */
     private void LoadLocalData()
     {
@@ -592,6 +592,7 @@ public class MainActivity extends AppCompatActivity{
         if(keyCode == KeyEvent.KEYCODE_BACK)
         {
             Log.i("Exit", "点击了返回按钮");
+            //保存当前打开的功能——————可以考虑将JSESSIONID也添加到配置文件里
             DataInOut.saveData(getApplicationContext(), state, "Config");
         }
         return super.onKeyDown(keyCode, event);
