@@ -36,13 +36,6 @@
                     android:id="@+id/post"
                     android:text="登陆"
                     android:layout_gravity="left|top"/>
-                <ImageButton
-                    android:layout_width="45dp"
-                    android:layout_height="45dp"
-                    android:id="@+id/more"
-                    android:background="@drawable/more"
-                    android:layout_gravity="right|top"
-                    android:alpha="50" />
                 <ListView
                     android:id="@+id/mylist"
                     android:layout_width="match_parent"
@@ -57,7 +50,7 @@
             android:layout_height="match_parent"
             android:orientation="vertical"
             android:layout_gravity="left"
-            android:background="#E0EEE0" >
+            android:background="#8abef2" >
             <LinearLayout
                 android:id="@+id/menu_header"
                 android:layout_width="match_parent"

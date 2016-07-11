@@ -28,7 +28,7 @@
             android:id="@+id/date"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="请填写物流时间"
+            android:hint="日期如：2015-11-11 11:11:11"
             android:selectAllOnFocus="true"/>
     </TableRow>
     <TableRow>

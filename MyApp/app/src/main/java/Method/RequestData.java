@@ -107,11 +107,10 @@ public class RequestData {
             case 3:
                 //由于该请求返回一个JsonArray格式的json字符串，应特殊处理
                 realUrl = url + "logistics/" + param;
-                Log.i("Message", realUrl);
+                Log.i("LogisticsGet", realUrl + " JSESSIONID:" + JSESSIONID);
                 try {
                     response = SendHttpRequest.sendGet(realUrl, null, JSESSIONID);
                     List<String> array = GetJsonArray.getJsonArray(response);
-
                     for (int i = 0; i < array.size(); i++) {
                         Logistics logistics = gson.fromJson(array.get(i), Logistics.class);
                         listItem = new HashMap<String, Object>();
@@ -124,7 +123,7 @@ public class RequestData {
                     }
                 }catch (Exception e)
                 {
-                    Log.i("Error" , "访问失败");
+                    Log.i("LogisticsError" , "查看物流信息失败:"+ e.toString());
                 }
                 break;
             case 4:

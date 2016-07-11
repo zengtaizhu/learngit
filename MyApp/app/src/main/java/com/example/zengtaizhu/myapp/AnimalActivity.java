@@ -9,17 +9,19 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.ContextMenu;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
-import android.widget.TableLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import Method.DataInOut;
@@ -29,21 +31,18 @@ import Method.SendHttpRequest;
 
 /**
  * 用于显示动物的具体信息
- *
  */
 public class AnimalActivity extends AppCompatActivity {
 
     //该界面上的ListView
     private ListView listView;
-    //该界面的“显示”按钮
-    private Button show;
     //该界面的“返回”按钮
-    private Button back;
+    private ImageButton back;
     private Bundle bundle;
     //传输到该界面的listView中
     private List<Map<String, Object>> listItems = new ArrayList<Map<String, Object>>();
     //查看的动物的id
-    private String animalId = null;
+    private String animalId;
     //查看的选项
     private int selectedItem;
     //登陆凭证
@@ -61,7 +60,7 @@ public class AnimalActivity extends AppCompatActivity {
         {
             if(msg.what == 0x111)
             {
-                Toast.makeText(getApplicationContext(), "动物id:" + animalId + "选择了:" + selectedItem, Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "没有数据", Toast.LENGTH_SHORT).show();
             }
             if(msg.what == 0x112)
             {
@@ -135,11 +134,12 @@ public class AnimalActivity extends AppCompatActivity {
         }
         //设置ActionBar为toolbar，代表原本的 Actionbar
         Toolbar toolbar = (Toolbar)findViewById(R.id.toolbar);
-        toolbar.setTitle(title);
+        toolbar.setTitle("");
+        TextView textView = (TextView)findViewById(R.id.tip);
+        textView.setText(title);
         setSupportActionBar(toolbar);
         //为ToolBar添加事件
         toolbar.setOnMenuItemClickListener(onMenuItemClick);
-        show = (Button) findViewById(R.id.show);
         listView = (ListView)findViewById(R.id.list);
         new Thread(){
             @Override
@@ -150,8 +150,16 @@ public class AnimalActivity extends AppCompatActivity {
                 {
                     try
                     {
-                        listItems = (List<Map<String,Object>>) DataInOut.readData(getApplicationContext(), SaveFileName[selectedItem]);
-                        handler.sendEmptyMessage(0x113);
+                        listItems = (List<Map<String,Object>>) DataInOut.readData(getApplicationContext(), SaveFileName[selectedItem] + animalId);
+                        if(listItems != null)
+                        {
+                            handler.sendEmptyMessage(0x113);
+                        }
+                        else
+                        {
+                            //没有数据时，提醒
+                            handler.sendEmptyMessage(0x111);
+                        }
                     }catch (Exception e)
                     {
                         Log.i("Error", "读取数据失败");
@@ -165,27 +173,22 @@ public class AnimalActivity extends AppCompatActivity {
                         //按照选择的功能获取相应的位置
                         listItems = RequestData.getData(selectedItem,animalId,JSESSIONID);
                         //存储数据
-                        DataInOut.saveData(getApplicationContext(), listItems, SaveFileName[selectedItem]);
+                        DataInOut.saveData(getApplicationContext(), listItems, SaveFileName[selectedItem] + animalId);
                         handler.sendEmptyMessage(0x113);
                     }
                     catch (Exception e)
                     {
-                        Log.i("Error",e.getMessage());
+                        Log.i("LogisticsGet","获取物流信息失败：" + e.getMessage());
                     }
                 }
             }
         }.start();
         ItemOnLongClick();
-        show.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                handler.sendEmptyMessage(0x111);
-            }
-        });
-        back = (Button)findViewById(R.id.goBack);
+        back = (ImageButton)findViewById(R.id.goBack);
         back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                //停止该Activity
                 handler.sendEmptyMessage(0x112);
             }
         });
@@ -234,7 +237,7 @@ public class AnimalActivity extends AppCompatActivity {
                         //删除listItems中所选中的一列
                         listItems.remove(selectedPosition);
                         //更新保存在本地的数据
-                        DataInOut.saveData(getApplicationContext(), listItems, SaveFileName[selectedItem]);
+                        DataInOut.saveData(getApplicationContext(), listItems, SaveFileName[selectedItem] + animalId);
                         //通知listView更新
                         handler.sendEmptyMessage(0x114);
                     }
@@ -253,9 +256,10 @@ public class AnimalActivity extends AppCompatActivity {
      */
     private void distView(final int selectedPosition)
     {
+        AlertDialog.Builder builder = new AlertDialog.Builder(AnimalActivity.this);
+        LayoutInflater factory = LayoutInflater.from(this);
         //装载app\src\main\res\layout\logistics_dialog.xml界面布局文件
-        TableLayout layoutForm = (TableLayout)getLayoutInflater()
-                .inflate(R.layout.logistics_dialog, null);
+        final View textEntryView = factory.inflate(R.layout.logistics_dialog, null);;
         //对话框标题
         final String title;
         if(selectedPosition >= 0)
@@ -266,89 +270,95 @@ public class AnimalActivity extends AppCompatActivity {
         {
             title = "添加信息";
         }
-        new AlertDialog.Builder(this)
-                //设置对话框的图标
-                .setIcon(R.drawable.title)
-                //设置对话框的标题
-                .setTitle(title)
-                //设置对话框显示的view对象
-                .setView(layoutForm)
-                //为对话框设置一个“确定”的按钮
-                .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+        //设置对话框的图标
+        builder.setIcon(R.drawable.title);
+        //设置对话框的标题
+        builder.setTitle(title);
+        //设置对话框显示的view对象
+        builder.setView(textEntryView);
+        //为对话框设置一个“确定”的按钮
+        builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                new Thread()
+                {
                     @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        new Thread()
+                    public void run()
+                    {
+                        //获得对话框录入的信息
+                        String position = ((EditText)textEntryView.findViewById(R.id.position)).getText().toString();
+                        String time = ((EditText)textEntryView.findViewById(R.id.date)).getText().toString();
+                        String person = ((EditText)textEntryView.findViewById(R.id.person)).getText().toString();
+                        String result = null;
+                        //添加或修改信息到本地以及上传到服务器
+                        if(selectedPosition >= 0)
                         {
-                            @Override
-                            public void run()
+                            listItem = listItems.get(selectedPosition);
+                            //更新物流信息
+                            String logisticsId = listItem.get("id").toString();
+                            String url = "http://202.116.161.86:8888/distributor/logistics/"
+                                    + animalId + "/" + logisticsId;
+                            String params = "{\"animalId\":\"" + animalId + "\",\"logisticsId\":\"" +
+                                    logisticsId + "\",\"position\":\"" + position + "\",\"time\":\"" +
+                                    time + "\",\"person\":\"" + person +"\"}";
+                            result = SendHttpRequest.sendPut(url, params, JSESSIONID);
+                            if(result.contains("success"))
                             {
-                                //获得对话框录入的信息
-                                String position = ((EditText)findViewById(R.id.position)).getText().toString();
-                                String time = ((EditText)findViewById(R.id.date)).getText().toString();
-                                String person = ((EditText)findViewById(R.id.person)).getText().toString();
-                                String result = null;
-                                listItem = listItems.get(selectedPosition);
-                                //添加或修改信息到本地以及上传到服务器
-                                if(selectedPosition >= 0)
-                                {
-                                    //修改信息
-                                    String logisticsId = listItem.get("logisticsId").toString();
-                                    String url = "http://202.116.161.86:8888/distributor/logistics/"
-                                            + animalId + "/" + logisticsId;
-                                    String params = "{\"animalId\":\"" + animalId + "\",\"logisticsId\":\"" +
-                                            logisticsId + "\",\"position\":\"" + position + "\",\"time\":\"" +
-                                            time + "\",\"person\":\"" + person +"\"}";
-                                    result = SendHttpRequest.sendPost(url, params, JSESSIONID);
-                                    if(result.contains("success"))
-                                    {
-                                        Log.i("Modify", "修改物流信息成功");
-                                    }
-                                    else
-                                    {
-                                        Log.i("Modify", "修改物流信息失败");
-                                    }
-                                    listItem.put("animalId", animalId);
-                                    listItem.put("id", logisticsId);
-                                    listItem.put("position", position);
-                                    listItem.put("time", time);
-                                    listItem.put("person", person);
-                                    //替代原来的信息
-                                    listItems.set(selectedPosition, listItem);
-                                }
-                                else
-                                {
-                                    //添加信息
-                                    String url = "http://202.116.161.86:8888/distributor/logistics/"
-                                            + animalId;
-                                    String params = "{\"animalId\":\"" + animalId + "\",\"position\":\"" + position +
-                                            "\",\"time\":\"" + time + "\",\"person\":\"" + person +"\"}";
-                                    result = SendHttpRequest.sendPost(url, params, JSESSIONID);
-                                    //获得物流的id，result格式{"id":"123123..."}
-                                    String id = result.substring(7, result.length() - 2);
-                                    //新增一个新的信息
-                                    listItem.put("animalId", animalId);
-                                    listItem.put("id", id);
-                                    listItem.put("position", position);
-                                    listItem.put("time", time);
-                                    listItem.put("person", person);
-                                    listItems.add(listItem);
-                                }
-                                //通知ListView界面更新
-                                handler.sendEmptyMessage(0x114);
+                                Log.i("Modify", "修改物流信息成功");
+                                listItem = new HashMap<String, Object>();
+                                listItem.put("animalId", animalId);
+                                listItem.put("id", logisticsId);
+                                listItem.put("position", position);
+                                listItem.put("time", time);
+                                listItem.put("person", person);
+                                //替代原来的信息
+                                listItems.set(selectedPosition, listItem);
                             }
-                        }.start();
+                            else
+                            {
+                                Log.i("Modify", "修改物流信息失败");
+                            }
+                        }
+                        else
+                        {
+                            //添加物流信息
+                            String url = "http://202.116.161.86:8888/distributor/logistics/" + animalId;
+                            String params = "{\"position\":\"" + position + "\",\"time\":\""
+                                    + time + "\",\"person\":\"" + person +"\"}";
+                            result = SendHttpRequest.sendPost(url, params, JSESSIONID);
+                            if(result.contains("success"))
+                            {
+                                Log.i("LogisticsAdd", "物流信息添加失败");
+                                //添加物流信息成功，则返回{"id":"123123...","message":"success"}
+                                String id = result.substring(7, result.length() - 22);
+                                Log.i("Message", animalId + "|" + id + "|" + position + "|" + position +
+                                "|" + time + "|" + person + "|");
+                                listItem = new HashMap<String, Object>();
+                                //新增一个新的信息
+                                listItem.put("animalId", animalId);
+                                listItem.put("id", id);
+                                listItem.put("position", position);
+                                listItem.put("time", time);
+                                listItem.put("person", person);
+                                listItems.add(listItem);
+                            }
+                            else
+                            {
+                                Log.i("LogisticsAdd", "物流信息添加失败");
+                            }
+                        }
+                        //存储数据
+                        DataInOut.saveData(getApplicationContext(), listItems, SaveFileName[selectedItem] + animalId);
+                        //通知ListView界面更新
+                        handler.sendEmptyMessage(0x114);
                     }
-                })
-                //为对话框设置一个“取消”按钮
-                .setNegativeButton("取消", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        //取消操作
-                    }
-                })
-                //创建并显示对话框
-                .create()
-                .show();
+                }.start();
+            }
+        });
+        //为对话框设置一个“取消”按钮
+        builder.setNegativeButton("取消", null);
+        //创建并显示对话框
+        builder.create().show();
     }
 
     private Toolbar.OnMenuItemClickListener onMenuItemClick = new Toolbar.OnMenuItemClickListener() {
@@ -359,7 +369,8 @@ public class AnimalActivity extends AppCompatActivity {
                 case R.id.add:
                     //Toast.makeText(getApplicationContext(), "添加信息", Toast.LENGTH_SHORT).show();
                     //弹出增加信息的对话框
-                    distView(-1);
+                    if(selectedItem == 3)
+                        distView(-1);
                     break;
             }
             return false;

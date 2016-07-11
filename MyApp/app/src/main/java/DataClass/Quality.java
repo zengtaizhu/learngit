@@ -11,7 +11,7 @@ public class Quality implements Serializable {
     private String batchNumber;//质检批次
     private int sampleNumber;//抽检数量
     private int qualifiedNumber;//合格数量
-    private Date date;//质检日期 格式:yyyy-mm-dd
+    private String date;//质检日期 格式:yyyy-mm-dd
     private String originId;//检查id
     private String organization;//检测机构
     private String person;//检测人员
@@ -40,11 +40,11 @@ public class Quality implements Serializable {
         this.organization = organization;
     }
 
-    public Date getDate() {
+    public String getDate() {
         return date;
     }
 
-    public void setDate(Date date) {
+    public void setDate(String date) {
         this.date = date;
     }
 

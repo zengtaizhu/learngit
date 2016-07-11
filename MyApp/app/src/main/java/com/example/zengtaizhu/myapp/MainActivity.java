@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.ContextMenu;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -18,7 +19,6 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.Toast;
@@ -41,8 +41,6 @@ public class MainActivity extends AppCompatActivity{
     private String JSESSIONID = null;
     //登陆按钮
     private Button post;
-    //更多按钮
-    private ImageButton more;
     //侧滑栏的内容
     private ListView sliderList;
     //主界面的内容
@@ -115,6 +113,10 @@ public class MainActivity extends AppCompatActivity{
             {
                 Toast.makeText(getApplicationContext(), "操作失败，请稍后尝试", Toast.LENGTH_SHORT).show();
             }
+            if(msg.what == 0x128)
+            {
+                Toast.makeText(getApplicationContext(), "网络或本地没有该数据", Toast.LENGTH_SHORT).show();
+            }
         }
     };
     @Override
@@ -127,31 +129,27 @@ public class MainActivity extends AppCompatActivity{
         setSupportActionBar(toolbar);
         //为ToolBar添加事件
         toolbar.setOnMenuItemClickListener(onMenuItemClick);
+        //完成界面的初始化，即读取上次退出时的配置
+        initialize();
         myDrawerLayout = (DrawerLayout)findViewById(R.id.drawer_layout);
         post = (Button)findViewById(R.id.post);
-        more = (ImageButton)findViewById(R.id.more);
         listView = (ListView)findViewById(R.id.mylist);
         sliderList = (ListView)findViewById(R.id.menu_list);
         //设置DrawerLayout的监听事件
         sliderList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                //Toast.makeText(getApplicationContext(),"选中了第" + position + "个",Toast.LENGTH_SHORT).show();
-                //每次切换管理项都清空一次
-                listItems.clear();
+                if(listItems != null)
+                {
+                    //每次切换管理项都清空一次
+                    listItems.clear();
+                }
                 //标志：显示选中的功能
                 state = position;
                 //如果没有登陆，则使用已经保存的数据
                 if(JSESSIONID == null)
                 {
-                    try
-                    {
-                        listItems = (List<Map<String,Object>>) DataInOut.readData(getApplicationContext(), SaveFileName[state]);
-                        handler.sendEmptyMessage(0x125);
-                    }catch (Exception e)
-                    {
-                        Log.i("Error", "读取数据失败");
-                    }
+                    LoadLocalData();
                 }
                 else{
                     //如果已经登陆，则更新已有的数据
@@ -177,6 +175,7 @@ public class MainActivity extends AppCompatActivity{
                 }
             }
         });
+        //长按事件
         ItemOnLongClick();
         //登陆按钮
         post.setOnClickListener(new View.OnClickListener() {
@@ -207,13 +206,6 @@ public class MainActivity extends AppCompatActivity{
                 }.start();
             }
         });
-        //“更多”按钮
-        more.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-            }
-        });
         //侧滑栏的监听事件----可删除，或添加动画
         myDrawerLayout.addDrawerListener(new DrawerLayout.DrawerListener(){
 
@@ -238,6 +230,33 @@ public class MainActivity extends AppCompatActivity{
             }
         });
     }
+
+    /**
+     * 初始化界面，加载上次保存的状态
+     */
+    private void initialize()
+    {
+        //读取上次打开的功能
+        try
+        {
+            Object obj = DataInOut.readData(getApplicationContext(), "Config");
+            if(obj == null)
+                return;
+            Log.i("Config", "obj =" + obj);
+            state = Integer.parseInt(obj.toString());
+            if(state >= 0)
+            {
+                //加载数据到界面上
+                LoadLocalData();
+            }
+        }
+        catch (NumberFormatException e)
+        {
+            Log.i("Config", "获取上次保存的数据失败");
+            state = -1;
+        }
+    }
+
     //长按方式弹出菜单多选方式
     private void ItemOnLongClick() {
         listView.setOnCreateContextMenuListener(new View.OnCreateContextMenuListener() {
@@ -277,11 +296,12 @@ public class MainActivity extends AppCompatActivity{
                         if(JSESSIONID != null)
                         {
                             Object deleteID = null;
-                            switch (selectedPosition)
+                            switch (state)
                             {
                                 case 0:
                                 case 1:
                                     deleteID = listItems.get(selectedPosition).get("id");
+                                    Log.i("Delete", "deleteID = " + deleteID);
                                     break;
                                 case 2:
                                     deleteID = listItems.get(selectedPosition).get("animalId");
@@ -542,5 +562,38 @@ public class MainActivity extends AppCompatActivity{
         // 使得Toolbar的Menu生效
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
+    }
+
+    /**
+     * 加载本地的缓冲数据，并显示在界面上
+     */
+    private void LoadLocalData()
+    {
+        try
+        {
+            listItems = (List<Map<String,Object>>) DataInOut.readData(getApplicationContext(), SaveFileName[state]);
+            if(listItems.size() == 0)
+            {
+                Log.i("Error", "本地没有缓存数据");
+                handler.sendEmptyMessage(0x128);
+            }
+            else
+                handler.sendEmptyMessage(0x125);
+        }catch (Exception e)
+        {
+            Log.i("Error", "读取数据失败");
+        }
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event)
+    {
+        //按下键盘上返回按钮
+        if(keyCode == KeyEvent.KEYCODE_BACK)
+        {
+            Log.i("Exit", "点击了返回按钮");
+            DataInOut.saveData(getApplicationContext(), state, "Config");
+        }
+        return super.onKeyDown(keyCode, event);
     }
 }

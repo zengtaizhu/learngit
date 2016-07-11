@@ -4,9 +4,6 @@
         <item>进货信息管理</item>
         <item>出货信息管理</item>
         <item>产品信息管理</item>
-        <item>物流信息管理</item>
-        <item>质检信息管理</item>
-        <item>生病信息管理</item>
     </string-array>
     <string-array name="stockMsg">
         <item>添加进货信息</item>

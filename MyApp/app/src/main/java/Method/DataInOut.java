@@ -50,19 +50,20 @@ public class DataInOut {
     {
         Object obj = null;
         SharedPreferences preferences = context.getSharedPreferences(fileName, Context.MODE_PRIVATE);
-        String productBase64 = preferences.getString("data", "");
-        //读取字节
-        byte[] base64 = Base64.decode(productBase64.getBytes(), 0);
-        //封装到字节流
-        ByteArrayInputStream bais = new ByteArrayInputStream(base64);
         try
         {
+            String productBase64 = preferences.getString("data", null);
+            //读取字节
+            byte[] base64 = Base64.decode(productBase64.getBytes(), 0);
+            //封装到字节流
+            ByteArrayInputStream bais = new ByteArrayInputStream(base64);
             //再次封装
             ObjectInputStream bis = new ObjectInputStream(bais);
             try
             {
                 //读取对象
                 obj = bis.readObject();
+                Log.i("ok", "读取成功" + obj + "|");
             }catch(ClassNotFoundException e)
             {
                 e.printStackTrace();
@@ -70,11 +71,16 @@ public class DataInOut {
         }catch (StreamCorruptedException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
+        }catch (IllegalArgumentException e){
             e.printStackTrace();
         }
-        Log.i("ok", "读取成功");
+        catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }catch (Exception e)
+        {
+            e.printStackTrace();
+        }
         return obj;
     }
 }
