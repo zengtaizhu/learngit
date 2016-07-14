@@ -390,7 +390,8 @@ public class AnimalActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // 使得Toolbar的Menu生效
-        getMenuInflater().inflate(R.menu.menu_main, menu);
+        if(selectedItem == 3)
+            getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
 }
