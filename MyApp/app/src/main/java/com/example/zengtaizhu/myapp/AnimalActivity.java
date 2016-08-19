@@ -1,7 +1,6 @@
 package com.example.zengtaizhu.myapp;
 
 import android.content.DialogInterface;
-import android.content.Loader;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -54,6 +53,8 @@ public class AnimalActivity extends AppCompatActivity {
     private Map<String,Object> listItem;
     //数据保存的文件名
     public static String[] SaveFileName = new String[]{"receive", "sale", "animal", "logistics", "aniQua", "disease"};
+    //获取资源的网址
+    private String url = "http://www.scauszy.com:8899/distributor/";
     Handler handler = new Handler()
     {
         @Override
@@ -283,12 +284,12 @@ public class AnimalActivity extends AppCompatActivity {
                             listItem = listItems.get(selectedPosition);
                             //更新物流信息
                             String logisticsId = listItem.get("id").toString();
-                            String url = "http://202.116.161.86:8888/distributor/logistics/"
+                            String realUrl = url + "logistics/"
                                     + animalId + "/" + logisticsId;
                             String params = "{\"animalId\":\"" + animalId + "\",\"logisticsId\":\"" +
                                     logisticsId + "\",\"position\":\"" + position + "\",\"time\":\"" +
                                     time + "\",\"person\":\"" + person +"\"}";
-                            result = SendHttpRequest.sendPut(url, params, JSESSIONID);
+                            result = SendHttpRequest.sendPut(realUrl, params, JSESSIONID);
                             if(result.contains("success"))
                             {
                                 Log.i("Modify", "修改物流信息成功");
@@ -309,10 +310,10 @@ public class AnimalActivity extends AppCompatActivity {
                         else
                         {
                             //添加物流信息
-                            String url = "http://202.116.161.86:8888/distributor/logistics/" + animalId;
+                            String realUrl = url + "logistics/" + animalId;
                             String params = "{\"position\":\"" + position + "\",\"time\":\""
                                     + time + "\",\"person\":\"" + person +"\"}";
-                            result = SendHttpRequest.sendPost(url, params, JSESSIONID);
+                            result = SendHttpRequest.sendPost(realUrl, params, JSESSIONID);
                             if(result.contains("success"))
                             {
                                 Log.i("LogisticsAdd", "物流信息添加失败");

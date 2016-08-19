@@ -59,6 +59,8 @@ public class MainActivity extends AppCompatActivity{
     private SimpleAdapter simpleAdapter;
     //数据保存的文件名
     public static String[] SaveFileName = new String[]{"receive", "sale", "animal"};
+    //获取资源的网址
+    private String url = "http://www.scauszy.com:8899/";
     Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg)
@@ -189,9 +191,9 @@ public class MainActivity extends AppCompatActivity{
                         try
                         {
                             //登陆时所需的URL和params语句
-                            String url = "http://202.116.161.86:8888/login";
+                            String realUrl = url + "login";
                             String params = "username=222222&password=222222";
-                            response = SendHttpRequest.sendPost(url,params,null);
+                            response = SendHttpRequest.sendPost(realUrl,params,null);
                             //如果连接失败，则不进行GSON解析
                             if(response != "")
                             {
@@ -399,10 +401,10 @@ public class MainActivity extends AppCompatActivity{
                                     //更新信息
                                     //获取选中信息的id
                                     String id = listItems.get(selectedPosition).get("id").toString();
-                                    String url = "http://202.116.161.86:8888/distributor/receive/" + id;
+                                    String realUrl = url + "distributor/receive/" + id;
                                     String params = "{\"id\":\"" + id +"\",\"date\":\"" + disDate +
                                             "\",\"category\":\"" + disName + "\",\"disBatchNum\":\"" + disBatchNum + "\"}";
-                                    String result = SendHttpRequest.sendPut(url, params, JSESSIONID);
+                                    String result = SendHttpRequest.sendPut(realUrl, params, JSESSIONID);
                                     if(result.contains("success"))
                                     {
                                         Log.i("Modify", "进货信息修改成功");
@@ -416,10 +418,10 @@ public class MainActivity extends AppCompatActivity{
                                 else
                                 {
                                     //添加信息
-                                    String url = "http://202.116.161.86:8888/distributor/receive";
+                                    String realUrl = url + "distributor/receive";
                                     String params = "{\"date\":\"" + disDate + "\",\"category\":\""
                                             + disName + "\",\"disBatchNum\":\"" + disBatchNum + "\"}";
-                                    String result = SendHttpRequest.sendPost(url, params, JSESSIONID);
+                                    String result = SendHttpRequest.sendPost(realUrl, params, JSESSIONID);
                                     if(result.contains("success"))
                                     {
                                         Log.i("Add", "进货信息添加成功");
@@ -440,10 +442,10 @@ public class MainActivity extends AppCompatActivity{
                                     //更新信息
                                     //获取选中信息的id
                                     String id = listItems.get(selectedPosition).get("id").toString();
-                                    String url = "http://202.116.161.86:8888/distributor/sale/" + id;
+                                    String realUrl = url + "distributor/sale/" + id;
                                     String params = "{\"id\":\"" + id +"\",\"date\":\"" + date + "\",\"category\":\""
                                             + name + "\",\"batchNum\":\"" + batchNum + "\"}";
-                                    String result = SendHttpRequest.sendPut(url, params, JSESSIONID);
+                                    String result = SendHttpRequest.sendPut(realUrl, params, JSESSIONID);
                                     if(result.contains("success"))
                                     {
                                         Log.i("Modify", "进货信息修改成功");
@@ -457,10 +459,10 @@ public class MainActivity extends AppCompatActivity{
                                 else
                                 {
                                     //添加信息
-                                    String url = "http://202.116.161.86:8888/distributor/sale/";
+                                    String realUrl = url + "distributor/sale/";
                                     String params = "{\"date\":\"" + date + "\",\"category\":\""
                                             + name + "\",\"batchNum\":\"" + batchNum + "\"}";
-                                    String result = SendHttpRequest.sendPost(url, params, JSESSIONID);
+                                    String result = SendHttpRequest.sendPost(realUrl, params, JSESSIONID);
                                     if(result.contains("success"))
                                     {
                                         Log.i("Sale", "出货信息添加成功");
@@ -481,10 +483,10 @@ public class MainActivity extends AppCompatActivity{
                                     //获取选中信息的id
                                     String id = listItems.get(selectedPosition).get("id").toString();
                                     String state = ((EditText)textEntryView.findViewById(R.id.state)).getText().toString();
-                                    String url = "http://202.116.161.86:8888/distributor/animal/" + id;
+                                    String realUrl = url + "distributor/animal/" + id;
                                     String params = "{\"animalId\":\"" + id + "\",\"saleBatchNum\":\"" +
                                             saleBatchNum + "\",\"state\":\"" + state + "\"}";
-                                    String result = SendHttpRequest.sendPut(url, params, JSESSIONID);
+                                    String result = SendHttpRequest.sendPut(realUrl, params, JSESSIONID);
                                     if(result.contains("success"))
                                     {
                                         Log.i("Animal", "动物信息更新成功");
@@ -499,10 +501,10 @@ public class MainActivity extends AppCompatActivity{
                                 {
                                     //添加信息
                                     String sourceCode = ((EditText)textEntryView.findViewById(R.id.sourceCode)).getText().toString();
-                                    String url = "http://202.116.161.86:8888/distributor/animal";
+                                    String realUrl = url + "istributor/animal";
                                     String params = "{\"sourceCode\":\"" + sourceCode +
                                             "\",\"saleBatchNum\":\"" + saleBatchNum + "\"}";
-                                    String result = SendHttpRequest.sendPost(url, params, JSESSIONID);
+                                    String result = SendHttpRequest.sendPost(realUrl, params, JSESSIONID);
                                     if(result.contains("success"))
                                     {
                                         Log.i("Animal", "添加动物信息成功");

@@ -33,7 +33,7 @@ public class RequestData {
     {
         Gson gson = new Gson();
         //Http资源请求的URL网址
-        String url = "http://202.116.161.86:8888/distributor/";
+        String url = "http://www.scauszy.com:8899/distributor/";
         List<Map<String, Object>> listItems = new ArrayList<Map<String, Object>>();
         HashMap<String, Object> listItem = null;
         //返回的响应字符串

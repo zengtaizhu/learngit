@@ -15,24 +15,24 @@ public class DeleteOnline {
      */
     public static void DeleteData(int n, Object params, String JSESSIONID)
     {
-        String url = null;
+        String url = "http://www.scauszy.com:8899/distributor/";
         switch (n)
         {
             case 0:
                 //删除进货信息
-                url = "http://202.116.161.86:8888/distributor/receive/";
+                url += "receive/";
                 break;
             case 1:
                 //删除出货信息
-                url = "http://202.116.161.86:8888/distributor/sale/";
+                url += "sale/";
                 break;
             case 2:
                 //删除动物信息
-                url = "http://202.116.161.86:8888/distributor/animal/";
+                url += "animal/";
                 break;
             case 3:
                 //删除动物的物流信息
-                url = "http://202.116.161.86:8888/distributor/logistics/";
+                url += "logistics/";
                 break;
             default:
                 break;
