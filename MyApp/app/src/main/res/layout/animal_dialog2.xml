@@ -1,33 +1,73 @@
 <?xml version="1.0" encoding="utf-8"?>
-<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:id="@+id/animalModifyDialog">
-    <TableRow>
+    android:id="@+id/animalModifyDialog"
+    android:orientation="vertical"
+    android:padding="20dp">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="#145894">
         <TextView
+            android:id="@+id/title"
             android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:textSize="30dp"
+            android:textColor="#fafafa"
+            android:text="提示"/>
+    </LinearLayout>
+    <TableLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+        <TableRow>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="10pt"
+                android:text="出货批次码："/>
+            <!--输入进货批次号的文本框-->
+            <EditText
+                android:id="@+id/saleBatchNum"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="请填写出货批次码"/>
+        </TableRow>
+        <TableRow>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="10pt"
+                android:text="动物状态："/>
+            <!--输入货品名称的文本框-->
+            <EditText
+                android:id="@+id/state"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="请填写动物的状态"
+                />
+        </TableRow>
+    </TableLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:background="#e6e6e6"
+        android:orientation="horizontal"
+        android:gravity="center">
+        <Button
+            android:id="@+id/positiveButton"
+            android:layout_width="100dp"
             android:layout_height="wrap_content"
-            android:textSize="10pt"
-            android:text="出货批次码："/>
-        <!--输入进货批次号的文本框-->
-        <EditText
-            android:id="@+id/saleBatchNum"
-            android:layout_width="match_parent"
+            android:background="#fa8135"
+            android:layout_marginRight="20dp"
+            android:text="确定"/>
+        <Button
+            android:id="@+id/negativeButton"
+            android:layout_width="100dp"
             android:layout_height="wrap_content"
-            android:hint="请填写出货批次码"/>
-    </TableRow>
-    <TableRow>
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textSize="10pt"
-            android:text="动物状态："/>
-        <!--输入货品名称的文本框-->
-        <EditText
-            android:id="@+id/state"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="请填写动物的状态"
-            />
-    </TableRow>
-</TableLayout>
+            android:text="取消"
+            android:layout_marginLeft="20dp"/>
+    </LinearLayout>
+</LinearLayout>

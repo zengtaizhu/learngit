@@ -42,6 +42,9 @@
                     android:layout_height="500dp"
                     android:divider="#aecce6"
                     android:dividerHeight="2dp"
+                    android:headerDividersEnabled="true"
+                    android:footerDividersEnabled="true"
+                    android:cacheColorHint="#badfec"
                     android:layout_gravity="left|bottom|right" />
             </FrameLayout>
         </LinearLayout>

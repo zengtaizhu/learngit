@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    //SlidingMenu属性
+    <attr name="rightPadding" format="dimension"></attr>
+    <declare-styleable name="SlidingMenu">
+        <attr name="rightPadding"></attr>
+    </declare-styleable>
+
+    //ViewPagerIndicator属性
+    <attr name="visible_tab_count" format="integer"></attr>
+    <declare-styleable name="ViewPagerIndicator">
+        <attr name="visible_tab_count"></attr>
+    </declare-styleable>
+
+</resources>
