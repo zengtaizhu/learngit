@@ -1,6 +1,7 @@
 package com.example.zengtaizhu.myapp;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -11,7 +12,9 @@ import android.support.v7.widget.Toolbar.OnMenuItemClickListener;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnCreateContextMenuListener;
@@ -25,9 +28,9 @@ import com.google.gson.Gson;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import DataClass.Distributor;
 import HttpResponse.LoginMsg;
 import Method.DataInOut;
+import Method.DeleteOnline;
 import Method.RequestData;
 import Method.SendHttpRequest;
 
@@ -36,8 +39,6 @@ import Method.SendHttpRequest;
  */
 public class MainActivity2 extends AppCompatActivity{
 
-    //分销商的功能
-    private Distributor distributor = new Distributor();
     //登陆凭证
     private String JSESSIONID = null;
     //代表服务器响应的字符串
@@ -46,26 +47,18 @@ public class MainActivity2 extends AppCompatActivity{
     private List<Map<String, Object>> listItems = new ArrayList<Map<String, Object>>();
     //标志，标明目前的功能
     private int state = -1;
-    //显示在listView中的信息
-    private Map<String,Object> listItem;
     //插入listView的适配器
     private SimpleAdapter simpleAdapter;
     //数据保存的文件名
     public static String[] SaveFileName = new String[]{"receive", "sale", "animal"};
     //获取资源的网址
     private String url = "http://www.scauszy.com:8899/";
-    //侧滑item的type
-    private int type;
-    //对话框的type
-    private int typeDialog;
     //主界面的内容
     private ListView listView;
     //侧滑栏的组件
     private SlidingMenu slidingMenu;
+    //侧滑栏的内容
     private ListView sliderList;
-    private AdapterView.AdapterContextMenuInfo info;
-
-    private static final String TAG="ASYNC_TASK";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,8 +72,27 @@ public class MainActivity2 extends AppCompatActivity{
         toolbar.setOnMenuItemClickListener(onMenuItemClick);
         //完成界面的初始化，即读取上次退出时的配置
         initialize();
+        listView = (ListView)findViewById(R.id.id_lv_mainData);
         slidingMenu = (SlidingMenu)findViewById(R.id.id_slidingMenu);
         sliderList = (ListView)findViewById(R.id.id_lv_leftMenu);
+        new Thread() {
+            @Override
+            public void run() {
+                try {
+                    //登陆时所需的URL和params语句
+                    String realUrl = url + "login";
+                    String params = "username=222222&password=222222";
+                    response = SendHttpRequest.sendPost(realUrl,params,null);
+                    //如果连接失败，则不进行GSON解析
+                    if(response != "") {
+                        handler.sendEmptyMessage(0x123);
+                    }
+                }
+                catch(Exception e) {
+                    Log.i("My Android",e.getMessage());
+                }
+            }
+        }.start();
         //设置侧滑栏功能列表的监听事件
         sliderList.setOnItemClickListener(new OnItemClickListener() {
             @Override
@@ -88,6 +100,7 @@ public class MainActivity2 extends AppCompatActivity{
                 if(listItems != null) {
                     //每次切换管理项都清空一次
                     listItems.clear();
+                    Log.i("CleanListItems", "ok");
                 }
                 //标志：显示选中的功能
                 state = position;
@@ -108,8 +121,10 @@ public class MainActivity2 extends AppCompatActivity{
                                 handler.sendEmptyMessage(0x125);
                             }
                             catch (Exception e) {
-                                Log.i("Error",e.getMessage());
+                                Log.i("HttpGetError",e.getMessage());
                             }
+                            //通知listView更新数据
+                            handler.sendEmptyMessage(0x126);
                         }
                     }.start();
                 }
@@ -117,24 +132,6 @@ public class MainActivity2 extends AppCompatActivity{
         });
         //长按事件
         ItemOnLongClick();
-        new Thread() {
-            @Override
-            public void run() {
-                try {
-                    //登陆时所需的URL和params语句
-                    String realUrl = url + "login";
-                    String params = "username=222222&password=222222";
-                    response = SendHttpRequest.sendPost(realUrl,params,null);
-                    //如果连接失败，则不进行GSON解析
-                    if(response != "") {
-                        handler.sendEmptyMessage(0x123);
-                    }
-                }
-                catch(Exception e) {
-                    Log.i("My Android",e.getMessage());
-                }
-            }
-        }.start();
     }
 
     /**
@@ -184,6 +181,72 @@ public class MainActivity2 extends AppCompatActivity{
     }
 
     /**
+     *长按菜单响应函数
+     * @param item
+     * @return
+     */
+    public boolean onContextItemSelected(MenuItem item) {
+        final int selectedPosition = ((AdapterView.AdapterContextMenuInfo) item.getMenuInfo()).position;
+        switch (item.getItemId()) {
+            case 0:
+                // 更新操作
+                //打开对话框
+                distView(selectedPosition);
+                break;
+            case 1:
+                // 删除操作
+                //删除选中信息，包括网络上的资源以及界面的listView
+                new Thread() {
+                    @Override
+                    public void run() {
+                        //已经登陆，则同时删除网络资源
+                        if(JSESSIONID != null) {
+                            Object deleteID = null;
+                            switch (state) {
+                                case 0:
+                                case 1:
+                                    deleteID = listItems.get(selectedPosition).get("id");
+                                    Log.i("Delete", "deleteID = " + deleteID);
+                                    break;
+                                case 2:
+                                    deleteID = listItems.get(selectedPosition).get("animalId");
+                            }
+                            //删除所选中的网络资源
+                            DeleteOnline.DeleteData(state, deleteID, JSESSIONID);
+                        }
+                        //删除listItems中所选中的一列
+                        listItems.remove(selectedPosition);
+                        //更新保存在本地的数据
+                        DataInOut.saveData(getApplicationContext(), listItems, SaveFileName[state]);
+                        //通知listView更新
+                        handler.sendEmptyMessage(0x126);
+                    }
+                }.start();
+                break;
+            case 2:
+                //跳转到下一个Activity并显示该动物的物流信息
+            case 3:
+                //跳转到下一个Activity并显示该动物的质检信息
+            case 4:
+                //跳转到下一个Activity并显示该动物的生病信息
+                Intent intent;
+                Bundle bundle = new Bundle();
+                String animalId = listItems.get(selectedPosition).get("id").toString();
+                //将该动物的id、查看的选项以及登陆凭证传送过去
+                bundle.putString("animalId", animalId);
+                bundle.putInt("selectedItem", item.getItemId() + 1);
+                bundle.putString("JSESSIONID", JSESSIONID);
+                intent = new Intent(this, AnimalActivity.class);
+                intent.putExtras(bundle);
+                startActivity(intent);
+                break;
+            default:
+                break;
+        }
+        return super.onContextItemSelected(item);
+    }
+
+    /**
      * 加载本地的缓存数据，并显示在界面上
      */
     private void LoadLocalData() {
@@ -199,8 +262,14 @@ public class MainActivity2 extends AppCompatActivity{
         }catch (Exception e) {
             Log.i("Error", "读取数据失败");
         }
+        //通知listView更新数据
+        handler.sendEmptyMessage(0x126);
     }
 
+
+    /**
+     * toolbar的监听事件
+     */
     private OnMenuItemClickListener onMenuItemClick = new OnMenuItemClickListener() {
         @Override
         public boolean onMenuItemClick(MenuItem item) {
@@ -216,7 +285,9 @@ public class MainActivity2 extends AppCompatActivity{
         }
     };
 
-    //打开一个自定义AlertDialog，用于增加或修改一条信息
+    /**
+     * 打开一个自定义AlertDialog，用于增加或修改一条信息
+     */
     private void distView(final int selectedPosition) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         LayoutInflater factory = LayoutInflater.from(this);
@@ -448,19 +519,19 @@ public class MainActivity2 extends AppCompatActivity{
                                 new int[]{R.id.category, R.id.date, R.id.batchNum, R.id.number});
                         break;
                     case 2:
+                    default:
                         //创建一个动物信息的SimpleAdapter
                         simpleAdapter = new SimpleAdapter(getApplicationContext(), listItems,
                                 R.layout.animal_item,
                                 new String[]{"sourceCode", "saleBatchNum", "state", "birthday", "category"},
                                 new int[]{R.id.sourceCode, R.id.saleBatchNum, R.id.state, R.id.birthday, R.id.category});
                         break;
-                    default:
-                        break;
                 }
                 listView.setAdapter(simpleAdapter);
             }
             if(msg.what == 0x126) {
-                simpleAdapter.notifyDataSetChanged();
+                if(simpleAdapter != null)
+                    simpleAdapter.notifyDataSetChanged();
             }
             if(msg.what == 0x127) {
                 Toast.makeText(getApplicationContext(), "操作失败，请稍后尝试", Toast.LENGTH_SHORT).show();
@@ -470,4 +541,22 @@ public class MainActivity2 extends AppCompatActivity{
             }
         }
     };
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // 使得Toolbar的Menu生效
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        //按下键盘上返回按钮
+        if(keyCode == KeyEvent.KEYCODE_BACK) {
+            Log.i("Exit", "点击了返回按钮");
+            //保存当前打开的功能——————可以考虑将JSESSIONID也添加到配置文件里
+            DataInOut.saveData(getApplicationContext(), state, "Config");
+        }
+        return super.onKeyDown(keyCode, event);
+    }
 }

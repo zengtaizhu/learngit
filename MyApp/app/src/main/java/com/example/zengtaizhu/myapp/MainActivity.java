@@ -16,7 +16,6 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewStub;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
@@ -32,12 +31,9 @@ import Method.DeleteOnline;
 import Method.RequestData;
 import Method.SendHttpRequest;
 import HttpResponse.LoginMsg;
-import DataClass.Distributor;
 
 public class MainActivity extends AppCompatActivity{
 
-    //分销商的功能
-    private Distributor distributor = new Distributor();
     //登陆凭证
     private String JSESSIONID = null;
     //登陆按钮
@@ -55,7 +51,7 @@ public class MainActivity extends AppCompatActivity{
     //标志，标明目前的功能
     private int state = -1;
     //显示在listView中的信息
-    private Map<String,Object> listItem;
+//    private Map<String,Object> listItem;
     //插入listView的适配器
     private SimpleAdapter simpleAdapter;
     //数据保存的文件名
@@ -106,7 +102,8 @@ public class MainActivity extends AppCompatActivity{
                 listView.setAdapter(simpleAdapter);
             }
             if(msg.what == 0x126) {
-                simpleAdapter.notifyDataSetChanged();
+                if(simpleAdapter != null)
+                    simpleAdapter.notifyDataSetChanged();
             }
             if(msg.what == 0x127) {
                 Toast.makeText(getApplicationContext(), "操作失败，请稍后尝试", Toast.LENGTH_SHORT).show();
@@ -165,6 +162,8 @@ public class MainActivity extends AppCompatActivity{
                             catch (Exception e) {
                                 Log.i("Error",e.getMessage());
                             }
+                            //通知listView更新数据
+                            handler.sendEmptyMessage(0x126);
                         }
                     }.start();
                 }
@@ -541,6 +540,8 @@ public class MainActivity extends AppCompatActivity{
         }catch (Exception e) {
             Log.i("Error", "读取数据失败");
         }
+        //通知listView更新数据
+        handler.sendEmptyMessage(0x126);
     }
 
     @Override

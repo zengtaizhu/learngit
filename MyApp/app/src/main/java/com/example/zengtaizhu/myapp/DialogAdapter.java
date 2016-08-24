@@ -3,8 +3,10 @@ package com.example.zengtaizhu.myapp;
 import android.app.ActionBar.LayoutParams;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.Button;
 
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
@@ -31,6 +33,8 @@ public class DialogAdapter extends Dialog{
         private View contentView;
         private OnClickListener positiveButtonClickListener;
         private OnClickListener negativeButtonClickListener;
+        //dialog的xml布局ID
+        private int layout_id;
 
         public Builder(Context context){
             this.context = context;
@@ -54,6 +58,10 @@ public class DialogAdapter extends Dialog{
         public Builder setContentView(Context context){
             this.context = context;
             return this;
+        }
+
+        public void setLayout(int id){
+            this.layout_id = id;
         }
 
         /**
@@ -94,44 +102,32 @@ public class DialogAdapter extends Dialog{
             return this;
         }
 
-        public DialogAdapter create(int choice){
+        /**
+         *创建添加一个dialog
+         * @return
+         */
+        public DialogAdapter create(){
             LayoutInflater inflater = (LayoutInflater)context
                     .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             final DialogAdapter dialog = new DialogAdapter(context, R.style.Dialog);
-            View layout = null;
-            //根据choice选择对应的布局
-            switch (choice){
-                case 0:
-                    layout = inflater.inflate(R.layout.receive_dialog, null);
-                    break;
-                case 1:
-                    layout = inflater.inflate(R.layout.receive_dialog, null);
-                    break;
-                case 2:
-                    layout = inflater.inflate(R.layout.receive_dialog, null);
-                    break;
-                case 3:
-                    layout = inflater.inflate(R.layout.receive_dialog, null);
-                    break;
-                case 4:
-                default:
-                    layout = inflater.inflate(R.layout.receive_dialog, null);
-                    break;
-            }
+            //android 4.0以上dialog点击其他地方也会消失,设置为false后就只能点击按钮消失
+            dialog.setCanceledOnTouchOutside(false);
+            View layout = inflater.inflate(layout_id, null);
             dialog.addContentView(layout, new LayoutParams(MATCH_PARENT,WRAP_CONTENT));
             if(null != positiveButtonText){
                 //设置按钮文字
-//                ((Button) layout.findViewById(R.id.positiveButton))
-//                        .setText(positiveButtonText);
+                ((Button) layout.findViewById(R.id.positiveButton))
+                        .setText(positiveButtonText);
                 if(null != positiveButtonClickListener){
                     //绑定按钮事件
-//                    ((Button) layout.findViewById(R.id.positiveButton))
-//                            .setOnClickListener(new View.OnClickListener() {
-//                                public void onClick(View v) {
-//                                    positiveButtonClickListener.onClick(dialog,
-//                                            DialogInterface.BUTTON_POSITIVE);
-//                                }
-//                            });
+                    ((Button) layout.findViewById(R.id.positiveButton))
+                            .setOnClickListener(new View.OnClickListener() {
+                                public void onClick(View v) {
+                                    positiveButtonClickListener.onClick(dialog,
+                                            DialogInterface.BUTTON_POSITIVE);
+                                    dialog.dismiss();
+                                }
+                            });
                 }
             }
             else{
